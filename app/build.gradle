@@ -1,0 +1,73 @@
+plugins {
+    alias(libs.plugins.androidApp)
+    alias(libs.plugins.ksp)
+    alias(libs.plugins.hilt)
+    alias(libs.plugins.kotlin.parcelize)
+}
+
+android {
+    namespace 'io.chthonic.weather'
+    compileSdk versions.targetSdk
+
+    defaultConfig {
+        applicationId "io.chthonic.weather"
+        minSdk versions.minSdk
+        targetSdk versions.targetSdk
+        versionCode 1
+        versionName "1.0"
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    signingConfigs {
+        debug {
+            storeFile rootProject.file('generic_signing.jks')
+            storePassword "12345678"
+            keyAlias "generic"
+            keyPassword "12345678"
+        }
+        release {
+            storeFile rootProject.file('generic_signing.jks')
+            storePassword "12345678"
+            keyAlias "generic"
+            keyPassword "12345678"
+        }
+    }
+
+    buildTypes {
+        debug {
+            signingConfig signingConfigs.debug
+        }
+        release {
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.release
+        }
+    }
+    buildFeatures {
+        buildConfig true
+    }
+}
+
+kotlin {
+    jvmToolchain(libs.versions.jvmTarget.get().toInteger())
+}
+
+dependencies {
+    implementation libs.androidx.core
+    implementation project(path: ':domain')
+    implementation project(path: ':data:rickmorty')
+    implementation project(path: ':presentation')
+
+    // di
+    implementation libs.hilt.android
+    ksp libs.hilt.android.compiler
+
+    // logging
+    implementation libs.timber
+
+    // testing
+    testImplementation libs.junit
+    androidTestImplementation libs.androidx.test.ext.junit
+    androidTestImplementation libs.espresso.core
+}

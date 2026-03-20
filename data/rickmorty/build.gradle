@@ -1,0 +1,66 @@
+plugins {
+    alias(libs.plugins.androidLibrary)
+    alias(libs.plugins.ksp)
+    alias(libs.plugins.hilt)
+}
+
+android {
+    namespace 'io.chthonic.weather.data.rickmorty'
+    compileSdk versions.targetSdk
+
+    defaultConfig {
+        minSdk versions.minSdk
+        targetSdk versions.targetSdk
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        consumerProguardFiles "consumer-rules.pro"
+    }
+}
+
+kotlin {
+    jvmToolchain(libs.versions.jvmTarget.get().toInteger())
+}
+
+ksp {
+    arg("room.schemaLocation", "$projectDir/schemas")
+}
+
+dependencies {
+    implementation libs.androidx.core
+    implementation project(path: ':data:common')
+    implementation project(path: ':domain:dataapi')
+
+    // room
+    implementation libs.room.runtime
+    implementation libs.room
+    ksp libs.room.compiler
+
+    // coroutines, flow
+    implementation libs.coroutines.core
+    implementation libs.coroutines.android
+
+    // json
+    implementation libs.moshi.adapters
+    implementation libs.moshi.kotlin
+    implementation libs.moshi.kotlin.codegen
+    implementation libs.moshi
+
+    // di
+    implementation libs.hilt.android
+    ksp libs.hilt.android.compiler
+
+    // net
+    implementation libs.okhttp
+    implementation libs.okhttp.logging.interceptor
+
+    // rest
+    implementation libs.retrofit.converter.moshi
+    implementation libs.retrofit
+
+    // paging
+    implementation libs.paging.runtime
+    implementation libs.paging.room
+
+    // testing
+    testImplementation libs.junit
+}

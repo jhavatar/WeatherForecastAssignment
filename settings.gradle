@@ -1,0 +1,26 @@
+pluginManagement {
+    repositories {
+        gradlePluginPortal()
+        google()
+        mavenCentral()
+    }
+}
+plugins {
+    id 'org.gradle.toolchains.foojay-resolver-convention' version '1.0.0'
+}
+dependencyResolutionManagement {
+    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+    repositories {
+        google()
+        mavenCentral()
+    }
+}
+rootProject.name = "WeatherForecastAssignment"
+include ':app'
+include ':data'
+include ':domain'
+include ':domain:dataapi'
+include ':domain:presentationapi'
+include ':presentation'
+include ':data:common'
+include ':data:rickmorty'

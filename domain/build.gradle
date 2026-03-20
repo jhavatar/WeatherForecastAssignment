@@ -1,0 +1,48 @@
+plugins {
+    alias(libs.plugins.androidLibrary)
+    alias(libs.plugins.ksp)
+    alias(libs.plugins.hilt)
+}
+
+android {
+    namespace 'io.chthonic.weather.domain'
+    compileSdk versions.targetSdk
+
+    defaultConfig {
+        minSdk versions.minSdk
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        consumerProguardFiles "consumer-rules.pro"
+    }
+    lint {
+        targetSdk 36
+    }
+    testOptions {
+        targetSdk 36
+    }
+}
+
+kotlin {
+    jvmToolchain(libs.versions.jvmTarget.get().toInteger())
+}
+
+dependencies {
+    implementation libs.androidx.core
+    implementation project(path: ':domain:dataapi')
+    implementation project(path: ':domain:presentationapi')
+
+    // di
+    implementation libs.hilt.android
+    ksp libs.hilt.android.compiler
+
+    // paging
+    implementation libs.paging.runtime
+
+    // logging
+    implementation libs.timber
+
+    // testing
+    testImplementation libs.junit
+    testImplementation libs.mockk
+    testImplementation libs.coroutines.test
+}

@@ -1,0 +1,79 @@
+plugins {
+    alias(libs.plugins.androidLibrary)
+    alias(libs.plugins.compose.compiler)
+    alias(libs.plugins.ksp)
+    alias(libs.plugins.hilt)
+}
+
+android {
+    namespace 'io.chthonic.weather.presentation'
+    compileSdk versions.targetSdk
+
+    defaultConfig {
+        minSdk versions.minSdk
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        consumerProguardFiles "consumer-rules.pro"
+    }
+
+    viewBinding {
+        enabled = true
+    }
+    buildFeatures {
+        compose true
+    }
+    lint {
+        targetSdk 36
+    }
+    testOptions {
+        targetSdk 36
+    }
+}
+
+kotlin {
+    jvmToolchain(libs.versions.jvmTarget.get().toInteger())
+}
+
+dependencies {
+    implementation libs.androidx.core
+    implementation project(path: ':domain:presentationapi')
+
+    // di
+    implementation libs.hilt.android
+    ksp libs.hilt.android.compiler
+    implementation libs.hilt.navigation.compose
+
+    // compose
+    implementation libs.compose
+    implementation libs.compose.material3
+    implementation libs.compose.tooling.preview
+    debugImplementation libs.compose.tooling
+    implementation libs.compose.lifecycle.runtime
+
+    // navigation
+    implementation libs.navigation
+    implementation libs.navigation.compose
+
+    // viewModel
+    implementation libs.viewmodel
+    implementation libs.viewmodel.compose
+    implementation libs.viewmodel.runtime
+
+    // coroutines, flow
+    implementation libs.coroutines.core
+    implementation libs.coroutines.android
+
+    // image
+    implementation libs.coil
+    implementation libs.coil.compose
+
+    // paging
+    implementation libs.paging.runtime
+    implementation libs.paging.compose
+
+    // logging
+    implementation libs.timber
+
+    // testing
+    testImplementation libs.junit
+}

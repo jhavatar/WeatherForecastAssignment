@@ -1,0 +1,35 @@
+plugins {
+    alias(libs.plugins.androidLibrary)
+}
+
+android {
+    namespace 'io.chthonic.rigkmortychars.domain.dataapi'
+    compileSdk versions.targetSdk
+
+    defaultConfig {
+        minSdk versions.minSdk
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        consumerProguardFiles "consumer-rules.pro"
+    }
+    lint {
+        targetSdk 36
+    }
+    testOptions {
+        targetSdk 36
+    }
+}
+
+kotlin {
+    jvmToolchain(libs.versions.jvmTarget.get().toInteger())
+}
+
+dependencies {
+    implementation libs.androidx.core
+
+    // paging
+    implementation libs.paging.runtime
+
+    // testing
+    testImplementation libs.junit
+}
