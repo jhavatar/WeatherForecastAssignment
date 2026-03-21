@@ -28,9 +28,7 @@ fun AppContainerNavHost(
             LocationListScreen(
                 sharedTransitionScope = sharedTransitionScope,
                 animatedContentScope = this@composable,
-                showSnackbar = appContainerState::showSnackbar,
-                navController = appContainerState.navController,
-                updateAppBarTitle = appContainerState::updateAppBarTitle
+                appContainerState = appContainerState,
             )
         }
         composable(
@@ -50,7 +48,7 @@ fun AppContainerNavHost(
                 lon = lon,
                 sharedTransitionScope = sharedTransitionScope,
                 animatedContentScope = this@composable,
-                updateAppBarTitle = appContainerState::updateAppBarTitle,
+                appContainerState = appContainerState,
             )
         }
     }

@@ -6,6 +6,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import io.chthonic.weather.common.models.Outcome
 import io.chthonic.weather.domain.presentationapi.GeocodingRepo
 import io.chthonic.weather.domain.presentationapi.WeatherRepo
+import io.chthonic.weather.presentation.models.ListUiState
 import io.chthonic.weather.presentation.models.toWeatherCondition
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
@@ -62,9 +63,12 @@ class LocationListViewModel @Inject constructor(
                 }
                 .collect { locations ->
                     // update state with locations immediately
+                    val postLoadingListUiState =
+                        if (locations.isEmpty()) ListUiState.Empty else ListUiState.Content
                     _state.update {
                         it.copy(
-                            locations = locations
+                            locations = locations,
+                            listUiState = if (it.listUiState == ListUiState.Loading) postLoadingListUiState else ListUiState.Content,
                         )
                     }
 
@@ -98,7 +102,12 @@ class LocationListViewModel @Inject constructor(
     }
 
     fun onQueryChange(query: String) {
-        _state.update { it.copy(searchText = query) }
+        _state.update {
+            it.copy(
+                searchText = query,
+                listUiState = if (query.isBlank()) ListUiState.Content else ListUiState.Loading,
+            )
+        }
     }
 
     fun onLocationClick(locationState: LocationCurrentWeather) {
@@ -109,6 +118,14 @@ class LocationListViewModel @Inject constructor(
                     lat = locationState.location.lat,
                     lon = locationState.location.lon
                 )
+            )
+        }
+    }
+
+    fun onToggleTemperatureUnits() {
+        _state.update {
+            it.copy(
+                temperatureUnits = it.temperatureUnits.toggle(),
             )
         }
     }

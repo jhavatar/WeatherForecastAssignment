@@ -1,5 +1,6 @@
 package io.chthonic.weather.presentation
 
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
@@ -23,8 +24,30 @@ class AppContainerState(
     var appBarTitle by mutableStateOf<String?>(null)
         private set
 
-    fun updateAppBarTitle(title: String?) {
+    var appBarStyle by mutableStateOf(AppBarStyle.Pinned)
+        private set
+
+    var appBarShowNavigationIcon by mutableStateOf<Boolean>(false)
+        private set
+
+    var appBarActions by mutableStateOf<(@Composable RowScope.() -> Unit)?>(null)
+        private set
+
+    fun updateAppBar(
+        title: String? = null,
+        showNavigationIcon: Boolean = false,
+        style: AppBarStyle = AppBarStyle.Pinned,
+        actions: (@Composable RowScope.() -> Unit)? = null,
+    ) {
         appBarTitle = title
+        appBarStyle = style
+        appBarShowNavigationIcon = showNavigationIcon
+        appBarActions = actions
+    }
+
+    fun clearAppBar() {
+        appBarTitle = null
+        appBarStyle = AppBarStyle.Pinned
     }
 
     fun showSnackbar(message: String, duration: SnackbarDuration = SnackbarDuration.Short) {
@@ -35,6 +58,11 @@ class AppContainerState(
             )
         }
     }
+}
+
+enum class AppBarStyle {
+    Pinned,       // TopAppBar, always visible
+    Large,        // LargeTopAppBar, collapses on scroll
 }
 
 @Composable

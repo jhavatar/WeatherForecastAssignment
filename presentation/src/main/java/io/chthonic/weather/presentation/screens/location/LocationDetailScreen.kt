@@ -15,6 +15,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
+import io.chthonic.weather.presentation.AppBarStyle
+import io.chthonic.weather.presentation.AppContainerState
 import io.chthonic.weather.presentation.R
 
 @Composable
@@ -25,7 +27,7 @@ fun LocationDetailScreen(
     lon: Double,
     sharedTransitionScope: SharedTransitionScope,
     animatedContentScope: AnimatedContentScope,
-    updateAppBarTitle: (String?) -> Unit,
+    appContainerState: AppContainerState,
 ) {
     val viewModel =
         hiltViewModel<LocationDetailViewModel, LocationDetailViewModel.LocationDetailViewModelFactory> { factory ->
@@ -38,8 +40,12 @@ fun LocationDetailScreen(
 
     val state = viewModel.state.collectAsStateWithLifecycle().value
 
-    LaunchedEffect(state.name) {
-        updateAppBarTitle(state.name)
+    LaunchedEffect(Unit) {
+        appContainerState.updateAppBar(
+            title = state.name,
+            showNavigationIcon = true,
+            style = AppBarStyle.Large,
+        )
     }
 
 //    LocationDetailScreenContent(

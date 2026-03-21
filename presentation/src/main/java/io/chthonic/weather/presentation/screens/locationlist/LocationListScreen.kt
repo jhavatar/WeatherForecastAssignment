@@ -14,10 +14,13 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.outlined.ErrorOutline
 import androidx.compose.material.icons.outlined.HourglassEmpty
+import androidx.compose.material.icons.outlined.SearchOff
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DockedSearchBar
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -26,8 +29,8 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SearchBarDefaults
 import androidx.compose.material3.SearchBarDefaults.InputField
-import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
@@ -35,15 +38,18 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation.NavController
 import io.chthonic.weather.common.models.Location
+import io.chthonic.weather.presentation.AppBarStyle
+import io.chthonic.weather.presentation.AppContainerState
 import io.chthonic.weather.presentation.R
+import io.chthonic.weather.presentation.models.ListUiState
 import io.chthonic.weather.presentation.models.TemperatureUnits
 import io.chthonic.weather.presentation.models.WeatherCondition
 import io.chthonic.weather.presentation.nav.Destination
@@ -52,6 +58,7 @@ import io.chthonic.weather.presentation.theme.Spacing
 import io.chthonic.weather.presentation.widgets.PreviewSharedAnimation
 import io.chthonic.weather.presentation.widgets.TemperatureText
 import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.toImmutableList
 
 @Composable
 @OptIn(ExperimentalSharedTransitionApi::class)
@@ -59,20 +66,37 @@ fun LocationListScreen(
     viewModel: LocationListViewModel = hiltViewModel(),
     sharedTransitionScope: SharedTransitionScope,
     animatedContentScope: AnimatedContentScope,
-    showSnackbar: (String, SnackbarDuration) -> Unit,
-    updateAppBarTitle: (String?) -> Unit,
-    navController: NavController
+    appContainerState: AppContainerState,
 ) {
+    val state = viewModel.state.collectAsStateWithLifecycle()
+
     val context = LocalContext.current
     LaunchedEffect(Unit) {
-        updateAppBarTitle(context.resources.getString(R.string.app_name))
+        appContainerState.updateAppBar(
+            title = context.resources.getString(R.string.app_name),
+            showNavigationIcon = false,
+            style = AppBarStyle.Pinned,
+            actions = {
+                TextButton(
+                    shape = CircleShape,
+                    onClick = {
+                        viewModel.onToggleTemperatureUnits()
+                    },
+                ) {
+                    Text(
+                        text = state.value.temperatureUnits.toStringShort(),
+                        style = MaterialTheme.typography.labelLarge,
+                    )
+                }
+            }
+        )
     }
 
     LaunchedEffect(Unit) {
         viewModel.navigationEvent.collect { event ->
             when (event) {
                 is NavigationEvent.ToLocationDetail -> {
-                    navController.navigate(
+                    appContainerState.navController.navigate(
                         Destination.LocationDetail.buildUniqueRoute(
                             name = event.name,
                             lat = event.lat,
@@ -84,11 +108,11 @@ fun LocationListScreen(
         }
     }
 
-    val state = viewModel.state.collectAsStateWithLifecycle()
-
     LocationListContent(
         locations = state.value.locations,
         searchText = state.value.searchText,
+        listUiState = state.value.listUiState,
+        units = state.value.temperatureUnits,
         onQueryChange = viewModel::onQueryChange,
         onClick = viewModel::onLocationClick,
     )
@@ -117,6 +141,8 @@ fun LocationListScreen(
 private fun LocationListContent(
     locations: ImmutableList<LocationCurrentWeather>,
     searchText: String,
+    listUiState: ListUiState,
+    units: TemperatureUnits,
     onQueryChange: (String) -> Unit,
     onClick: (LocationCurrentWeather) -> Unit
 ) {
@@ -137,14 +163,25 @@ private fun LocationListContent(
             )
         }
 
-        items(
-            locations.size,
-            key = {
-                locations[it].hashCode()
-            },
-        ) { idx ->
-            locations.getOrNull(idx)?.let { locationState ->
-                WeatherLocationItem(locationState, spacing = spacing) { onClick(locationState) }
+        when (listUiState) {
+            ListUiState.Loading -> item { LoadingScreen(Modifier.fillParentMaxHeight(0.5f)) }
+            ListUiState.Empty -> item { EmptyScreen(spacing, Modifier.fillParentMaxHeight(0.5f)) }
+            ListUiState.Error -> item { ErrorScreen(spacing, Modifier.fillParentMaxHeight(0.5f)) }
+            ListUiState.Content -> {
+                items(
+                    locations.size,
+                    key = {
+                        locations[it].hashCode()
+                    },
+                ) { idx ->
+                    locations.getOrNull(idx)?.let { locationState ->
+                        WeatherLocationItem(locationState, units = units, spacing = spacing) {
+                            onClick(
+                                locationState
+                            )
+                        }
+                    }
+                }
             }
         }
     }
@@ -154,7 +191,7 @@ private fun LocationListContent(
 @OptIn(ExperimentalSharedTransitionApi::class)
 private fun WeatherLocationItem(
     state: LocationCurrentWeather,
-    units: TemperatureUnits = TemperatureUnits.CELSIUS,
+    units: TemperatureUnits,
     spacing: Spacing,
     modifier: Modifier = Modifier,
     onClick: () -> Unit,
@@ -189,7 +226,8 @@ private fun WeatherLocationItem(
         }
 
 
-        (state.weatherConditionIcon ?: Icons.Outlined.HourglassEmpty).let { icon ->
+        ((if (state.weatherError) Icons.Outlined.ErrorOutline else state.weatherConditionIcon)
+            ?: Icons.Outlined.HourglassEmpty).let { icon ->
             Icon(
                 icon,
                 contentDescription = state.weatherCondition?.description,
@@ -207,31 +245,14 @@ private fun WeatherLocationItem(
                     fontFeatureSettings = "tnum", // tabular numbers
                 ),
                 otherTextStyle = MaterialTheme.typography.displayMedium,
-                modifier = Modifier.alpha(if (state.hasTemp) 1f else 0f),
+                modifier = Modifier.alpha(if (state.isLoading) 0f else 1f),
             )
-            this@Row.AnimatedVisibility(visible = !state.hasTemp) {
+            this@Row.AnimatedVisibility(visible = state.isLoading) {
                 CircularProgressIndicator()
             }
         }
     }
 }
-
-//@OptIn(ExperimentalSharedTransitionApi::class)
-//@Preview
-//@Composable
-//private fun PreviewLocationListContent() {
-//    PreviewSharedAnimation { sharedTransitionScope, animatedContentScope ->
-//        LocationListContent(
-//            flowOf(
-//                PagingData.from(
-//                    CharInfoPreviewProvider().values.toList()
-//                )
-//            ).collectAsLazyPagingItems(),
-//            sharedTransitionScope = sharedTransitionScope,
-//            animatedContentScope = animatedContentScope,
-//        ) {}
-//    }
-//}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -275,6 +296,88 @@ private fun LocationSearchBar(
     )
 }
 
+@Composable
+private fun LoadingScreen(modifier: Modifier = Modifier) {
+    Box(
+        modifier = modifier.fillMaxWidth(),
+        contentAlignment = Alignment.Center,
+    ) {
+        CircularProgressIndicator(
+            strokeWidth = 2.dp,
+            modifier = Modifier,
+        )
+    }
+}
+
+@Composable
+private fun EmptyScreen(
+    spacing: Spacing,
+    modifier: Modifier = Modifier,
+) {
+    Column(
+        modifier = modifier.fillMaxWidth(),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        Icon(
+            Icons.Outlined.SearchOff,
+            contentDescription = null,
+            modifier = Modifier.size(100.dp),
+        )
+
+        Text(
+            text = "No Cities",
+            style = MaterialTheme.typography.headlineSmall,
+            textAlign = TextAlign.Center,
+            modifier = Modifier
+                .padding(spacing.m),
+        )
+    }
+}
+
+@Composable
+private fun ErrorScreen(
+    spacing: Spacing,
+    modifier: Modifier = Modifier,
+) {
+    Column(
+        modifier = modifier.fillMaxWidth(),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        Icon(
+            Icons.Outlined.ErrorOutline,
+            contentDescription = null,
+            modifier = Modifier.size(100.dp),
+        )
+
+        Text(
+            text = "Error",
+            style = MaterialTheme.typography.headlineSmall,
+            textAlign = TextAlign.Center,
+            modifier = Modifier
+                .padding(spacing.m),
+        )
+    }
+}
+
+@OptIn(ExperimentalSharedTransitionApi::class)
+@Preview
+@Composable
+private fun PreviewLocationListContent() {
+    PreviewSharedAnimation { sharedTransitionScope, animatedContentScope ->
+        LocationListContent(
+            locations = WeatherLocationPreviewProvider().values.toImmutableList(),
+            searchText = "mew",
+            listUiState = ListUiState.Content,
+            units = TemperatureUnits.CELSIUS,
+            onQueryChange = {},
+            onClick = {},
+        )
+    }
+}
+
+
 @Preview
 @Composable
 @OptIn(ExperimentalSharedTransitionApi::class)
@@ -284,6 +387,7 @@ private fun PreviewWeatherLocationItem() {
             WeatherLocationPreviewProvider().values.first(),
             onClick = {},
             spacing = Spacing(),
+            units = TemperatureUnits.FAHRENHEIT,
         )
     }
 }

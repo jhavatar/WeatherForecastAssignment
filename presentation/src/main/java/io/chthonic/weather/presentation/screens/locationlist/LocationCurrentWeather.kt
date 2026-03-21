@@ -17,6 +17,9 @@ data class LocationCurrentWeather(
     val hasTemp: Boolean
         get() = temp != null
 
+    val isLoading: Boolean
+        get() = !hasTemp && !weatherError
+
     val displayCoords: String by lazy {
         location.format()
     }
