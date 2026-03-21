@@ -22,7 +22,9 @@ kotlin {
 }
 
 dependencies {
+    api project(path: ':common')
     implementation libs.androidx.core
+    implementation project(path: ':domain:dataapi')
 
     // coroutines, flow
     implementation libs.coroutines.core
@@ -33,6 +35,8 @@ dependencies {
     implementation libs.moshi.kotlin
     implementation libs.moshi.kotlin.codegen
     implementation libs.moshi
+    implementation libs.ktorClient.serialization
+    implementation libs.ktorClient.serializationJson
 
     // di
     implementation libs.hilt.android
@@ -41,6 +45,11 @@ dependencies {
     // net
     implementation libs.okhttp
     implementation libs.okhttp.logging.interceptor
+    implementation libs.ktorClient.contentNegotiation
+    implementation libs.ktorClient.android
+    implementation libs.ktorClient.logging
+    implementation libs.ktorClient.okhttp
+
 
     // logging
     api libs.timber
