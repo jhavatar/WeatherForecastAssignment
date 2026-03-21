@@ -1,4 +1,4 @@
-package io.chthonic.weather.presentation.character
+package io.chthonic.weather.presentation.screens.character
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

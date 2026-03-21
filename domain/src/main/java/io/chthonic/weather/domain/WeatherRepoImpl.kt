@@ -1,5 +1,6 @@
 package io.chthonic.weather.domain
 
+import io.chthonic.weather.common.models.CurrentForecast
 import io.chthonic.weather.common.models.DayForecast
 import io.chthonic.weather.common.models.Outcome
 import io.chthonic.weather.domain.dataapi.WeatherService
@@ -11,7 +12,7 @@ import javax.inject.Singleton
 class WeatherRepoImpl @Inject constructor(
     private val weatherService: WeatherService,
 ) : WeatherRepo {
-    override suspend fun getCurrentWeatherForecast(lat: Double, lon: Double): Outcome<DayForecast> {
+    override suspend fun getCurrentWeatherForecast(lat: Double, lon: Double): Outcome<CurrentForecast> {
         return weatherService.getCurrentWeather(lat, lon)
     }
 

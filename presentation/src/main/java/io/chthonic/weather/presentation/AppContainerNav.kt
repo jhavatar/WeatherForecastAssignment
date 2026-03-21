@@ -6,8 +6,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import io.chthonic.weather.presentation.character.CharacterScreen
-import io.chthonic.weather.presentation.characterlist.CharacterListScreen
+import io.chthonic.weather.presentation.screens.character.CharacterScreen
+import io.chthonic.weather.presentation.screens.locationlist.LocationListScreen
 import io.chthonic.weather.presentation.nav.Destination
 
 @OptIn(ExperimentalSharedTransitionApi::class)
@@ -25,7 +25,7 @@ fun AppContainerNavHost(
         composable(
             route = Destination.CharacterList.route,
         ) {
-            CharacterListScreen(
+            LocationListScreen(
                 sharedTransitionScope = sharedTransitionScope,
                 animatedContentScope = this@composable,
                 showSnackbar = appContainerState::showSnackbar,

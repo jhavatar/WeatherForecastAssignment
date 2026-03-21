@@ -1,4 +1,4 @@
-package io.chthonic.weather.presentation.character
+package io.chthonic.weather.presentation.screens.character
 
 import androidx.compose.animation.AnimatedContentScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi

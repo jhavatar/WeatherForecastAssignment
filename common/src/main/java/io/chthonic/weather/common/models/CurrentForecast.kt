@@ -2,9 +2,8 @@ package io.chthonic.weather.common.models
 
 import java.time.LocalDate
 
-data class DayForecast(
+class CurrentForecast(
     val date: LocalDate,
     val weatherCode: Int,
-    val maxTemp: Double,
-    val minTemp: Double,
+    val temp: Double,
 )

@@ -11,7 +11,7 @@ import io.ktor.client.request.parameter
 import javax.inject.Inject
 
 private const val NOMINATIM_CITY_END_POINT = "https://nominatim.openstreetmap.org/search"
-private const val CITY_LIMIT = 5
+private const val CITY_LIMIT = 20
 
 internal class GeocodingServiceImpl @Inject constructor(
     private val client: HttpClient,

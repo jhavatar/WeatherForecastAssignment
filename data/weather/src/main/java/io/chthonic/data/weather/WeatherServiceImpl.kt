@@ -2,6 +2,7 @@ package io.chthonic.data.weather
 
 import io.chthonic.data.weather.models.CurrentWeatherResponse
 import io.chthonic.data.weather.models.WeeklyWeatherResponse
+import io.chthonic.weather.common.models.CurrentForecast
 import io.chthonic.weather.common.models.DayForecast
 import io.chthonic.weather.common.models.Outcome
 import io.chthonic.weather.data.common.rest.executeAsResult
@@ -15,7 +16,7 @@ private const val OPEN_METEO_END_POINT = "https://api.open-meteo.com/v1/forecast
 
 class WeatherServiceImpl @Inject constructor(private val httpClient: HttpClient) : WeatherService {
 
-    override suspend fun getCurrentWeather(lat: Double, lon: Double): Outcome<DayForecast> {
+    override suspend fun getCurrentWeather(lat: Double, lon: Double): Outcome<CurrentForecast> {
         val response: Outcome<CurrentWeatherResponse> = httpClient.executeAsResult {
             get(OPEN_METEO_END_POINT) {
                 parameter("latitude", lat)

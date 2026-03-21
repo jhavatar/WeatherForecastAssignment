@@ -48,9 +48,13 @@ dependencies {
     implementation platform(libs.compose.bom)
     implementation libs.compose
     implementation libs.compose.material3
+    implementation libs.compose.icons.extended
     implementation libs.compose.tooling.preview
     debugImplementation libs.compose.tooling
     implementation libs.compose.lifecycle.runtime
+
+    // immutable
+    implementation libs.kotlinx.immutables
 
     // navigation
     implementation libs.navigation

@@ -1,5 +1,6 @@
 package io.chthonic.data.weather.models
 
+import io.chthonic.weather.common.models.CurrentForecast
 import io.chthonic.weather.common.models.DayForecast
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -13,13 +14,11 @@ data class CurrentWeather(
     @SerialName("wind_speed_10m") val windSpeed: Double,
     @SerialName("is_day") val isDay: Int,
 ) {
-    fun toDomainModel(): DayForecast {
-        return DayForecast(
+    fun toDomainModel(): CurrentForecast {
+        return CurrentForecast(
             date = LocalDate.now(),
             weatherCode = weatherCode,
-            maxTemp = temperatureCelsius,
-            minTemp = temperatureCelsius,
-            precipitationProbability = 0
+            temp = temperatureCelsius,
         )
     }
 }
