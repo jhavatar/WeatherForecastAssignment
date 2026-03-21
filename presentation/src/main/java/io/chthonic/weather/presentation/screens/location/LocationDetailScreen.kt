@@ -1,4 +1,4 @@
-package io.chthonic.weather.presentation.screens.character
+package io.chthonic.weather.presentation.screens.location
 
 import androidx.compose.animation.AnimatedContentScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
@@ -19,33 +19,39 @@ import io.chthonic.weather.presentation.R
 
 @Composable
 @OptIn(ExperimentalSharedTransitionApi::class)
-fun CharacterScreen(
-    characterId: Int?,
+fun LocationDetailScreen(
+    name: String,
+    lat: Double,
+    lon: Double,
     sharedTransitionScope: SharedTransitionScope,
     animatedContentScope: AnimatedContentScope,
     updateAppBarTitle: (String?) -> Unit,
 ) {
     val viewModel =
-        hiltViewModel<CharacterViewModel, CharacterViewModel.CharacterViewModelFactory> { factory ->
-            factory.create(characterId)
+        hiltViewModel<LocationDetailViewModel, LocationDetailViewModel.LocationDetailViewModelFactory> { factory ->
+            factory.create(
+                name = name,
+                lat = lat,
+                lon = lon,
+            )
         }
 
     val state = viewModel.state.collectAsStateWithLifecycle().value
 
-    LaunchedEffect(state.titleToShow) {
-        updateAppBarTitle(state.titleToShow)
+    LaunchedEffect(state.name) {
+        updateAppBarTitle(state.name)
     }
 
-    CharacterScreenContent(
-        state.imageUrlToShow,
-        sharedTransitionScope,
-        animatedContentScope,
-    )
+//    LocationDetailScreenContent(
+//        state.imageUrlToShow,
+//        sharedTransitionScope,
+//        animatedContentScope,
+//    )
 }
 
 @Composable
 @OptIn(ExperimentalSharedTransitionApi::class)
-private fun CharacterScreenContent(
+private fun LocationDetailScreenContent(
     url: String,
     sharedTransitionScope: SharedTransitionScope,
     animatedContentScope: AnimatedContentScope,

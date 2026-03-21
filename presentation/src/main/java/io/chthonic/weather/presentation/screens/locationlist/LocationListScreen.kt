@@ -32,7 +32,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
@@ -61,17 +64,22 @@ fun LocationListScreen(
     navController: NavController
 ) {
     val context = LocalContext.current
-    LaunchedEffect(viewModel) {
+    LaunchedEffect(Unit) {
         updateAppBarTitle(context.resources.getString(R.string.app_name))
     }
 
-    viewModel.navigateSideEffect.collectAsStateWithLifecycle().value?.let { sideEffect ->
-        when (val navTarget = sideEffect.getContentIfNotHandled()) {
-            is LocationListViewModel.NavigationTarget.CharacterScreen -> {
-                navController.navigate(Destination.Character.buildUniqueRoute(navTarget.characterId))
-            }
-
-            else -> { // ignore
+    LaunchedEffect(Unit) {
+        viewModel.navigationEvent.collect { event ->
+            when (event) {
+                is NavigationEvent.ToLocationDetail -> {
+                    navController.navigate(
+                        Destination.LocationDetail.buildUniqueRoute(
+                            name = event.name,
+                            lat = event.lat,
+                            lon = event.lon,
+                        )
+                    )
+                }
             }
         }
     }
@@ -167,6 +175,7 @@ private fun WeatherLocationItem(
                 maxLines = 2,
                 color = MaterialTheme.colorScheme.primary,
                 style = MaterialTheme.typography.titleMedium,
+                overflow = TextOverflow.Ellipsis,
                 modifier = Modifier,
             )
 
@@ -184,19 +193,22 @@ private fun WeatherLocationItem(
             Icon(
                 icon,
                 contentDescription = state.weatherCondition?.description,
-                modifier = Modifier.size(36.dp)
+                modifier = Modifier.size(32.dp)
             )
         }
 
         Box(contentAlignment = Alignment.Center, modifier = Modifier) {
-            state.temp?.let {
-                TemperatureText(
-                    temperature = state.temp,
-                    units = units,
-                    color = MaterialTheme.colorScheme.primary,
-                    textStyle = MaterialTheme.typography.displayMedium,
-                )
-            }
+            TemperatureText(
+                temperature = state.temp,
+                units = units,
+                color = MaterialTheme.colorScheme.primary,
+                valueTextStyle = MaterialTheme.typography.displayMedium.copy(
+                    fontFamily = FontFamily.Monospace,
+                    fontFeatureSettings = "tnum", // tabular numbers
+                ),
+                otherTextStyle = MaterialTheme.typography.displayMedium,
+                modifier = Modifier.alpha(if (state.hasTemp) 1f else 0f),
+            )
             this@Row.AnimatedVisibility(visible = !state.hasTemp) {
                 CircularProgressIndicator()
             }

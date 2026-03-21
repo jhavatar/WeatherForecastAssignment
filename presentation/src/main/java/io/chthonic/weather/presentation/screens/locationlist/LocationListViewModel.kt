@@ -7,13 +7,13 @@ import io.chthonic.weather.common.models.Outcome
 import io.chthonic.weather.domain.presentationapi.GeocodingRepo
 import io.chthonic.weather.domain.presentationapi.WeatherRepo
 import io.chthonic.weather.presentation.models.toWeatherCondition
-import io.chthonic.weather.presentation.wrapper.SideEffect
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -23,6 +23,7 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -37,9 +38,8 @@ class LocationListViewModel @Inject constructor(
     private val _state = MutableStateFlow(LocationListState())
     val state: StateFlow<LocationListState> = _state.asStateFlow()
 
-    private val _navigateSideEffect = MutableStateFlow<SideEffect<NavigationTarget>?>(null)
-    val navigateSideEffect: StateFlow<SideEffect<NavigationTarget>?> =
-        _navigateSideEffect.asStateFlow()
+    private val _navigationEvent = Channel<NavigationEvent>(Channel.BUFFERED)
+    val navigationEvent = _navigationEvent.receiveAsFlow()
 
     init {
         viewModelScope.launch {
@@ -102,7 +102,15 @@ class LocationListViewModel @Inject constructor(
     }
 
     fun onLocationClick(locationState: LocationCurrentWeather) {
-
+        viewModelScope.launch {
+            _navigationEvent.send(
+                NavigationEvent.ToLocationDetail(
+                    name = locationState.displayName,
+                    lat = locationState.location.lat,
+                    lon = locationState.location.lon
+                )
+            )
+        }
     }
 
     sealed class NavigationTarget {

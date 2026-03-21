@@ -6,9 +6,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import io.chthonic.weather.presentation.screens.character.CharacterScreen
-import io.chthonic.weather.presentation.screens.locationlist.LocationListScreen
 import io.chthonic.weather.presentation.nav.Destination
+import io.chthonic.weather.presentation.screens.location.LocationDetailScreen
+import io.chthonic.weather.presentation.screens.locationlist.LocationListScreen
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
@@ -19,11 +19,11 @@ fun AppContainerNavHost(
     val sharedTransitionScope = this@SharedTransitionLayout
     NavHost(
         navController = appContainerState.navController,
-        startDestination = Destination.CharacterList.route,
+        startDestination = Destination.LocationList.route,
         modifier = Modifier,
     ) {
         composable(
-            route = Destination.CharacterList.route,
+            route = Destination.LocationList.route,
         ) {
             LocationListScreen(
                 sharedTransitionScope = sharedTransitionScope,
@@ -34,12 +34,20 @@ fun AppContainerNavHost(
             )
         }
         composable(
-            route = Destination.Character.route,
-            arguments = Destination.Character.arguments,
+            route = Destination.LocationDetail.route,
+            arguments = Destination.LocationDetail.arguments,
         ) { backStackEntry ->
-            val charId = Destination.Character.getCharId(backStackEntry.arguments)
-            CharacterScreen(
-                characterId = charId,
+            val name =
+                Destination.LocationDetail.getName(backStackEntry.arguments) ?: return@composable
+            val lat =
+                Destination.LocationDetail.getLat(backStackEntry.arguments) ?: return@composable
+            val lon =
+                Destination.LocationDetail.getLon(backStackEntry.arguments) ?: return@composable
+
+            LocationDetailScreen(
+                name = name,
+                lat = lat,
+                lon = lon,
                 sharedTransitionScope = sharedTransitionScope,
                 animatedContentScope = this@composable,
                 updateAppBarTitle = appContainerState::updateAppBarTitle,

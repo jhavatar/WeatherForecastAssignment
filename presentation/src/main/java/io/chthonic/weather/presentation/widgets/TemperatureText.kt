@@ -17,7 +17,8 @@ fun TemperatureText(
     temperature: Double?,
     units: TemperatureUnits,
     color: Color,
-    textStyle: TextStyle,
+    valueTextStyle: TextStyle,
+    otherTextStyle: TextStyle,
     showDegrees: Boolean = true,
     showUnits: Boolean = true,
     modifier: Modifier = Modifier,
@@ -38,8 +39,8 @@ fun TemperatureText(
         verticalAlignment = Alignment.Top,
     ) {
         Text(
-            text = temperatureString,
-            style = textStyle,
+            text = temperatureString.padStartToLength(3),
+            style = valueTextStyle,
             color = color,
         )
 
@@ -51,9 +52,12 @@ fun TemperatureText(
         }?.let {
             Text(
                 text = it,
-                style = textStyle,
+                style = otherTextStyle,
                 color = color,
             )
         }
     }
 }
+
+private fun String.padStartToLength(length: Int, padChar: Char = ' '): String =
+    padStart(maxOf(length, this.length), padChar)
