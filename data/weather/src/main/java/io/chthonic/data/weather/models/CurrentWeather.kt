@@ -7,7 +7,7 @@ import kotlinx.serialization.Serializable
 import java.time.LocalDate
 
 @Serializable
-data class CurrentWeather(
+internal data class CurrentWeather(
     @SerialName("temperature_2m") val temperatureCelsius: Double,
     @SerialName("relative_humidity_2m") val humidityPercent: Int,
     @SerialName("weather_code") val weatherCode: Int,

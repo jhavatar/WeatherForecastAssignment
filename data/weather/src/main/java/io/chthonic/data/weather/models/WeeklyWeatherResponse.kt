@@ -4,6 +4,6 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class WeeklyWeatherResponse(
+internal data class WeeklyWeatherResponse(
     @SerialName("daily") val daily: DailyWeather,
 )

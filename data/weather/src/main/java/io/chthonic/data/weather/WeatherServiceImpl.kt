@@ -14,7 +14,7 @@ import javax.inject.Inject
 
 private const val OPEN_METEO_END_POINT = "https://api.open-meteo.com/v1/forecast"
 
-class WeatherServiceImpl @Inject constructor(private val httpClient: HttpClient) : WeatherService {
+internal class WeatherServiceImpl @Inject constructor(private val httpClient: HttpClient) : WeatherService {
 
     override suspend fun getCurrentWeather(lat: Double, lon: Double): Outcome<CurrentForecast> {
         val response: Outcome<CurrentWeatherResponse> = httpClient.executeAsResult {

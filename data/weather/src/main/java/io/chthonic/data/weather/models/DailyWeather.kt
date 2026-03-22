@@ -6,7 +6,7 @@ import kotlinx.serialization.Serializable
 import java.time.LocalDate
 
 @Serializable
-data class DailyWeather(
+internal data class DailyWeather(
     @SerialName("time") val dates: List<String>,
     @SerialName("weather_code") val weatherCodes: List<Int>,
     @SerialName("temperature_2m_max") val maxTemperatures: List<Double>,

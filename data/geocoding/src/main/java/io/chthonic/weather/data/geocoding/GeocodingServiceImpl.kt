@@ -22,7 +22,9 @@ internal class GeocodingServiceImpl @Inject constructor(
             client.get(NOMINATIM_CITY_END_POINT) {
                 parameter("q", query)
                 parameter("format", "json")
+                parameter("featuretype", "city")
                 parameter("limit", CITY_LIMIT)
+                parameter("addressdetails", 1)  // returns structured address parts
             }
         }
 

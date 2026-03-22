@@ -39,7 +39,7 @@ fun TemperatureText(
         verticalAlignment = Alignment.Top,
     ) {
         Text(
-            text = temperatureString.padStartToLength(3),
+            text = temperatureString, //.padStartToLength(3),
             style = valueTextStyle,
             color = color,
         )

@@ -5,32 +5,28 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.outlined.ErrorOutline
 import androidx.compose.material.icons.outlined.HourglassEmpty
-import androidx.compose.material.icons.outlined.SearchOff
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DockedSearchBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SearchBarDefaults
 import androidx.compose.material3.SearchBarDefaults.InputField
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
@@ -38,7 +34,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
@@ -55,8 +50,15 @@ import io.chthonic.weather.presentation.models.WeatherCondition
 import io.chthonic.weather.presentation.nav.Destination
 import io.chthonic.weather.presentation.theme.LocalSpacing
 import io.chthonic.weather.presentation.theme.Spacing
+import io.chthonic.weather.presentation.widgets.EMPTY_CONTENT_KEY
+import io.chthonic.weather.presentation.widgets.ERROR_CONTENT_KEY
+import io.chthonic.weather.presentation.widgets.EmptyContent
+import io.chthonic.weather.presentation.widgets.ErrorContent
+import io.chthonic.weather.presentation.widgets.LOADING_CONTENT_KEY
+import io.chthonic.weather.presentation.widgets.LoadingContent
 import io.chthonic.weather.presentation.widgets.PreviewSharedAnimation
 import io.chthonic.weather.presentation.widgets.TemperatureText
+import io.chthonic.weather.presentation.widgets.TemperatureUnitsButton
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 
@@ -77,17 +79,10 @@ fun LocationListScreen(
             showNavigationIcon = false,
             style = AppBarStyle.Pinned,
             actions = {
-                TextButton(
-                    shape = CircleShape,
-                    onClick = {
-                        viewModel.onToggleTemperatureUnits()
-                    },
-                ) {
-                    Text(
-                        text = state.value.temperatureUnits.toStringShort(),
-                        style = MaterialTheme.typography.labelLarge,
-                    )
-                }
+                TemperatureUnitsButton(
+                    state.value.temperatureUnits,
+                    viewModel::onToggleTemperatureUnits,
+                )
             }
         )
     }
@@ -116,24 +111,6 @@ fun LocationListScreen(
         onQueryChange = viewModel::onQueryChange,
         onClick = viewModel::onLocationClick,
     )
-
-//    when (val loadState = lazyCharInfoItems.loadState.refresh) {
-//        is LoadState.Loading -> LoadingProgress()
-//        is LoadState.Error -> showSnackbar(
-//            loadState.error.message ?: "Loading characters failed",
-//            SnackbarDuration.Short,
-//        )
-//
-//        else -> {}
-//    }
-//    when (val loadState = lazyCharInfoItems.loadState.append) {
-//        is LoadState.Error -> showSnackbar(
-//            loadState.error.message ?: "Loading characters failed",
-//            SnackbarDuration.Short
-//        )
-//
-//        else -> {}
-//    }
 }
 
 @Composable
@@ -164,15 +141,32 @@ private fun LocationListContent(
         }
 
         when (listUiState) {
-            ListUiState.Loading -> item { LoadingScreen(Modifier.fillParentMaxHeight(0.5f)) }
-            ListUiState.Empty -> item { EmptyScreen(spacing, Modifier.fillParentMaxHeight(0.5f)) }
-            ListUiState.Error -> item { ErrorScreen(spacing, Modifier.fillParentMaxHeight(0.5f)) }
+            ListUiState.Loading -> item(LOADING_CONTENT_KEY) {
+                LoadingContent(
+                    Modifier.fillParentMaxHeight(
+                        0.5f
+                    )
+                )
+            }
+
+            ListUiState.Empty -> item(EMPTY_CONTENT_KEY) {
+                EmptyContent(
+                    spacing = spacing,
+                    modifier = Modifier.fillParentMaxHeight(0.5f),
+                )
+            }
+
+            ListUiState.Error -> item(ERROR_CONTENT_KEY) {
+                ErrorContent(
+                    spacing = spacing,
+                    modifier = Modifier.fillParentMaxHeight(0.5f),
+                )
+            }
+
             ListUiState.Content -> {
                 items(
                     locations.size,
-                    key = {
-                        locations[it].hashCode()
-                    },
+                    key = { locations[it].key },
                 ) { idx ->
                     locations.getOrNull(idx)?.let { locationState ->
                         WeatherLocationItem(locationState, units = units, spacing = spacing) {
@@ -196,62 +190,58 @@ private fun WeatherLocationItem(
     modifier: Modifier = Modifier,
     onClick: () -> Unit,
 ) {
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(spacing.m),
-        modifier = modifier
-            .fillMaxWidth()
-            .clickable {
-                onClick()
+    ListItem(
+        modifier = modifier.clickable(onClick = onClick),
+        leadingContent = {
+            ((if (state.weatherError) Icons.Outlined.ErrorOutline else state.weatherConditionIcon)
+                ?: Icons.Outlined.HourglassEmpty).let { icon ->
+                Icon(
+                    icon,
+                    contentDescription = state.weatherCondition?.description,
+                    modifier = Modifier.size(36.dp),
+                    tint = MaterialTheme.colorScheme.primary,
+                )
             }
-            .padding(spacing.m),
-    ) {
-        Column(modifier = Modifier.weight(1f)) {
-            Text(
-                text = state.displayName,
-                maxLines = 2,
-                color = MaterialTheme.colorScheme.primary,
-                style = MaterialTheme.typography.titleMedium,
-                overflow = TextOverflow.Ellipsis,
-                modifier = Modifier,
-            )
+        },
+        headlineContent = {
+            Column {
+                Text(
+                    text = state.displayName,
+                    maxLines = 2,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    style = MaterialTheme.typography.titleMedium,
+                    overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier,
+                )
 
-            Text(
-                text = state.displayCoords,
-                maxLines = 1,
-                style = MaterialTheme.typography.titleSmall,
-                color = MaterialTheme.colorScheme.secondary,
-                modifier = Modifier.padding(top = spacing.xs),
-            )
-        }
-
-
-        ((if (state.weatherError) Icons.Outlined.ErrorOutline else state.weatherConditionIcon)
-            ?: Icons.Outlined.HourglassEmpty).let { icon ->
-            Icon(
-                icon,
-                contentDescription = state.weatherCondition?.description,
-                modifier = Modifier.size(32.dp)
-            )
-        }
-
-        Box(contentAlignment = Alignment.Center, modifier = Modifier) {
-            TemperatureText(
-                temperature = state.temp,
-                units = units,
-                color = MaterialTheme.colorScheme.primary,
-                valueTextStyle = MaterialTheme.typography.displayMedium.copy(
-                    fontFamily = FontFamily.Monospace,
-                    fontFeatureSettings = "tnum", // tabular numbers
-                ),
-                otherTextStyle = MaterialTheme.typography.displayMedium,
-                modifier = Modifier.alpha(if (state.isLoading) 0f else 1f),
-            )
-            this@Row.AnimatedVisibility(visible = state.isLoading) {
-                CircularProgressIndicator()
+                Text(
+                    text = state.displayCoords,
+                    maxLines = 1,
+                    style = MaterialTheme.typography.titleSmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.padding(top = spacing.xs),
+                )
             }
-        }
-    }
+        },
+        trailingContent = {
+            Box(contentAlignment = Alignment.Center, modifier = Modifier) {
+                TemperatureText(
+                    temperature = state.temp,
+                    units = units,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    valueTextStyle = MaterialTheme.typography.displayMedium.copy(
+                        fontFamily = FontFamily.Monospace,
+                        fontFeatureSettings = "tnum", // tabular numbers
+                    ),
+                    otherTextStyle = MaterialTheme.typography.displayMedium,
+                    modifier = Modifier.alpha(if (state.isLoading) 0f else 1f),
+                )
+                AnimatedVisibility(visible = state.isLoading) {
+                    CircularProgressIndicator()
+                }
+            }
+        },
+    )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -294,71 +284,6 @@ private fun LocationSearchBar(
         shadowElevation = 4.dp,
         content = { },
     )
-}
-
-@Composable
-private fun LoadingScreen(modifier: Modifier = Modifier) {
-    Box(
-        modifier = modifier.fillMaxWidth(),
-        contentAlignment = Alignment.Center,
-    ) {
-        CircularProgressIndicator(
-            strokeWidth = 2.dp,
-            modifier = Modifier,
-        )
-    }
-}
-
-@Composable
-private fun EmptyScreen(
-    spacing: Spacing,
-    modifier: Modifier = Modifier,
-) {
-    Column(
-        modifier = modifier.fillMaxWidth(),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally,
-    ) {
-        Icon(
-            Icons.Outlined.SearchOff,
-            contentDescription = null,
-            modifier = Modifier.size(100.dp),
-        )
-
-        Text(
-            text = "No Cities",
-            style = MaterialTheme.typography.headlineSmall,
-            textAlign = TextAlign.Center,
-            modifier = Modifier
-                .padding(spacing.m),
-        )
-    }
-}
-
-@Composable
-private fun ErrorScreen(
-    spacing: Spacing,
-    modifier: Modifier = Modifier,
-) {
-    Column(
-        modifier = modifier.fillMaxWidth(),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally,
-    ) {
-        Icon(
-            Icons.Outlined.ErrorOutline,
-            contentDescription = null,
-            modifier = Modifier.size(100.dp),
-        )
-
-        Text(
-            text = "Error",
-            style = MaterialTheme.typography.headlineSmall,
-            textAlign = TextAlign.Center,
-            modifier = Modifier
-                .padding(spacing.m),
-        )
-    }
 }
 
 @OptIn(ExperimentalSharedTransitionApi::class)

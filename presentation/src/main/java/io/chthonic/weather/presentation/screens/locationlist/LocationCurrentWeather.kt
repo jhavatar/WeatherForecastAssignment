@@ -14,6 +14,10 @@ data class LocationCurrentWeather(
     val weatherError: Boolean = false,
 ) {
 
+    val key: Int by lazy {
+        location.hashCode()
+    }
+
     val hasTemp: Boolean
         get() = temp != null
 

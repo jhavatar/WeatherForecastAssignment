@@ -34,7 +34,7 @@ sealed class Destination(val route: String, val arguments: List<NamedNavArgument
             arguments?.getString(LOC_NAME_ARG)?.let { Uri.decode(it) }
 
         fun getLat(arguments: Bundle?): Double? =
-            arguments?.getString(LOC_LAT_ARG)?.toDouble()
+            arguments?.getString(LOC_LAT_ARG)?.toDoubleOrNull()
 
         fun getLon(arguments: Bundle?): Double? =
             arguments?.getString(LOC_LON_ARG)?.toDoubleOrNull()
