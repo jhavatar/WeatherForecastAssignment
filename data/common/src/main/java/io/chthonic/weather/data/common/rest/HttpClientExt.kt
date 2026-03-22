@@ -9,6 +9,7 @@ import io.ktor.client.statement.bodyAsText
 import io.ktor.serialization.JsonConvertException
 import kotlinx.serialization.ExperimentalSerializationApi
 import timber.log.Timber
+import kotlin.coroutines.cancellation.CancellationException
 
 @OptIn(ExperimentalSerializationApi::class)
 suspend inline fun <reified T> HttpClient.executeAsResult(
@@ -27,11 +28,12 @@ suspend inline fun <reified T> HttpClient.executeAsResult(
             }
             Timber.e("Error response: $message")
             Outcome.Error(
-//                status = response.status.value,
                 message = message ?: "Unspecified error"
             )
         }
     }
+} catch (e: CancellationException) {
+    throw e // rethrow — never swallow cancellation
 } catch (e: Exception) {
     Outcome.Error(e.message ?: "Unknown error")
 }

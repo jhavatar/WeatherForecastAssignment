@@ -3,15 +3,19 @@ package io.chthonic.weather.presentation.screens.locationlist
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import io.chthonic.weather.common.models.Location
 import io.chthonic.weather.common.models.Outcome
 import io.chthonic.weather.domain.presentationapi.GeocodingRepo
+import io.chthonic.weather.domain.presentationapi.LocationRepo
 import io.chthonic.weather.domain.presentationapi.WeatherRepo
 import io.chthonic.weather.presentation.models.ListUiState
+import io.chthonic.weather.presentation.models.LocationPermissionState
 import io.chthonic.weather.presentation.models.toWeatherCondition
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.channels.Channel
@@ -27,13 +31,17 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import javax.inject.Inject
+
+private const val MY_LOCATION_DISPLAY_NAME = "My Location"
 
 @OptIn(ExperimentalCoroutinesApi::class, FlowPreview::class)
 @HiltViewModel
 class LocationListViewModel @Inject constructor(
     private val geocodingRepo: GeocodingRepo,
     private val weatherRepo: WeatherRepo,
+    private val locationRepo: LocationRepo,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(LocationListState())
@@ -41,6 +49,9 @@ class LocationListViewModel @Inject constructor(
 
     private val _navigationEvent = Channel<NavigationEvent>(Channel.BUFFERED)
     val navigationEvent = _navigationEvent.receiveAsFlow()
+
+    private var locationUpdatesJob: Job? = null
+    private var localWeatherFetchJob: Job? = null
 
     init {
         viewModelScope.launch {
@@ -67,7 +78,7 @@ class LocationListViewModel @Inject constructor(
                         if (locations.isEmpty()) ListUiState.Empty else ListUiState.Content
                     _state.update {
                         it.copy(
-                            locations = locations,
+                            searchLocations = locations,
                             listUiState = if (it.listUiState == ListUiState.Loading) postLoadingListUiState else ListUiState.Content,
                         )
                     }
@@ -90,7 +101,7 @@ class LocationListViewModel @Inject constructor(
                             // update just this location in state
                             _state.update { state ->
                                 state.copy(
-                                    locations = state.locations.map {
+                                    searchLocations = state.searchLocations.map {
                                         if (it.location.hashCode() == updated.location.hashCode()) updated else it
                                     }.toImmutableList(),
                                 )
@@ -130,9 +141,77 @@ class LocationListViewModel @Inject constructor(
         }
     }
 
-    sealed class NavigationTarget {
-        data class CharacterScreen(
-            val characterId: Int,
-        ) : NavigationTarget()
+    private fun startMyLocationUpdates() {
+        if (locationUpdatesJob?.isActive == true) return
+        locationUpdatesJob = viewModelScope.launch {
+            locationRepo.getLocationUpdates()
+                .collect { outcome ->
+                    Timber.v("startMyLocationUpdates: outcome = $outcome")
+                    when (outcome) {
+                        is Outcome.Success -> {
+                            _state.update {
+                                it.copy(
+                                    myLocation = LocationCurrentWeather(
+                                        location = outcome.data,
+                                        displayName = MY_LOCATION_DISPLAY_NAME,
+                                    )
+                                )
+                            }
+                            fetchWeatherForMyLocation(outcome.data)
+                        }
+
+                        is Outcome.Error -> {
+//                            _state.update { it.copy(locationError = outcome.message) }
+                        }
+                    }
+                }
+        }
+    }
+
+    private fun fetchWeatherForMyLocation(location: Location) {
+        localWeatherFetchJob?.cancel()
+        localWeatherFetchJob = viewModelScope.launch {
+            val outcome = weatherRepo.getCurrentWeatherForecast(location.lat, location.lon)
+            val location = state.value.myLocation ?: return@launch
+            Timber.v("fetchWeatherForLocation: outcome = $outcome")
+            val updated = when (outcome) {
+                is Outcome.Success -> location.copy(
+                    temp = outcome.data.temp,
+                    weatherCondition = outcome.data.weatherCode.toWeatherCondition()
+                )
+
+                else -> location.copy(weatherError = true)
+            }
+            Timber.v("fetchWeatherForLocation: updated = $updated")
+            _state.update { state ->
+                state.copy(myLocation = updated)
+            }
+        }
+    }
+
+
+    fun onLocationPermissionGranted() {
+        _state.update { it.copy(locationPermissionState = LocationPermissionState.Granted) }
+        startMyLocationUpdates()
+    }
+
+    fun onLocationPermissionDenied(isPermanent: Boolean) {
+        _state.update {
+            it.copy(
+                locationPermissionState = if (isPermanent) {
+                    LocationPermissionState.PermanentlyDenied
+                } else {
+                    LocationPermissionState.Denied
+                }
+            )
+        }
+    }
+
+    fun onLocationPermissionDismissed() {
+        locationUpdatesJob?.cancel()
+        locationUpdatesJob = null
+        localWeatherFetchJob?.cancel()
+        localWeatherFetchJob = null
+        _state.update { it.copy(locationPermissionState = LocationPermissionState.Skipped) }
     }
 }

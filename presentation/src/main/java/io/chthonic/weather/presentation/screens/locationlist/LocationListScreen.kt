@@ -28,6 +28,7 @@ import androidx.compose.material3.SearchBarDefaults
 import androidx.compose.material3.SearchBarDefaults.InputField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -39,6 +40,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.chthonic.weather.common.models.Location
 import io.chthonic.weather.presentation.AppBarStyle
@@ -54,11 +58,13 @@ import io.chthonic.weather.presentation.widgets.EMPTY_CONTENT_KEY
 import io.chthonic.weather.presentation.widgets.ERROR_CONTENT_KEY
 import io.chthonic.weather.presentation.widgets.EmptyContent
 import io.chthonic.weather.presentation.widgets.ErrorContent
+import io.chthonic.weather.presentation.widgets.HandleLocationPermissionState
 import io.chthonic.weather.presentation.widgets.LOADING_CONTENT_KEY
 import io.chthonic.weather.presentation.widgets.LoadingContent
 import io.chthonic.weather.presentation.widgets.PreviewSharedAnimation
 import io.chthonic.weather.presentation.widgets.TemperatureText
 import io.chthonic.weather.presentation.widgets.TemperatureUnitsButton
+import io.chthonic.weather.presentation.widgets.checkLocationPermission
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 
@@ -70,9 +76,10 @@ fun LocationListScreen(
     animatedContentScope: AnimatedContentScope,
     appContainerState: AppContainerState,
 ) {
+    val context = LocalContext.current
+    val lifecycleOwner = LocalLifecycleOwner.current
     val state = viewModel.state.collectAsStateWithLifecycle()
 
-    val context = LocalContext.current
     LaunchedEffect(Unit) {
         appContainerState.updateAppBar(
             title = context.resources.getString(R.string.app_name),
@@ -103,8 +110,30 @@ fun LocationListScreen(
         }
     }
 
+    // recheck permission when returning from settings
+    DisposableEffect(lifecycleOwner) {
+        val observer = LifecycleEventObserver { _, event ->
+            if (event == Lifecycle.Event.ON_RESUME) {
+                context.checkLocationPermission(
+                    onGranted = viewModel::onLocationPermissionGranted,
+                )
+            }
+        }
+        lifecycleOwner.lifecycle.addObserver(observer)
+        onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }
+    }
+
+    HandleLocationPermissionState(
+        state.value.locationPermissionState,
+        onGranted = viewModel::onLocationPermissionGranted,
+        onDenied = viewModel::onLocationPermissionDenied,
+        onDismissed = viewModel::onLocationPermissionDismissed,
+        context = context,
+    )
+
     LocationListContent(
-        locations = state.value.locations,
+        myLocation = state.value.myLocation,
+        locations = state.value.searchLocations,
         searchText = state.value.searchText,
         listUiState = state.value.listUiState,
         units = state.value.temperatureUnits,
@@ -116,6 +145,7 @@ fun LocationListScreen(
 @Composable
 @OptIn(ExperimentalSharedTransitionApi::class)
 private fun LocationListContent(
+    myLocation: LocationCurrentWeather?,
     locations: ImmutableList<LocationCurrentWeather>,
     searchText: String,
     listUiState: ListUiState,
@@ -138,6 +168,14 @@ private fun LocationListContent(
                     .padding(horizontal = spacing.m)
                     .padding(vertical = spacing.m),
             )
+        }
+
+        myLocation?.let {
+            item("myLocation") {
+                WeatherLocationItem(it, units = units, spacing = spacing) {
+                    onClick(it)
+                }
+            }
         }
 
         when (listUiState) {
@@ -208,6 +246,7 @@ private fun WeatherLocationItem(
                 Text(
                     text = state.displayName,
                     maxLines = 2,
+                    minLines = 2,
                     color = MaterialTheme.colorScheme.onSurface,
                     style = MaterialTheme.typography.titleMedium,
                     overflow = TextOverflow.Ellipsis,
@@ -292,6 +331,12 @@ private fun LocationSearchBar(
 private fun PreviewLocationListContent() {
     PreviewSharedAnimation { sharedTransitionScope, animatedContentScope ->
         LocationListContent(
+            myLocation = LocationCurrentWeather(
+                location = Location(12.0, 13.0),
+                displayName = "My Location",
+                weatherCondition = WeatherCondition.CLEAR_SKY,
+                temp = 23.4,
+            ),
             locations = WeatherLocationPreviewProvider().values.toImmutableList(),
             searchText = "mew",
             listUiState = ListUiState.Content,
