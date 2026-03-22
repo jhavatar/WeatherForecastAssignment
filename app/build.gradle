@@ -59,6 +59,7 @@ dependencies {
     implementation project(path: ':data:rickmorty')
     implementation project(path: ':data:geocoding')
     implementation project(path: ':data:weather')
+    implementation project(path: ':data:location')
     implementation project(path: ':presentation')
 
     // di

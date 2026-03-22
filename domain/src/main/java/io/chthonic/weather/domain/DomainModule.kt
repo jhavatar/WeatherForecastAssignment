@@ -7,6 +7,7 @@ import dagger.hilt.components.SingletonComponent
 import io.chthonic.weather.domain.presentationapi.GeocodingRepo
 import io.chthonic.weather.domain.presentationapi.GetCharacterListUseCase
 import io.chthonic.weather.domain.presentationapi.GetCharacterUseCase
+import io.chthonic.weather.domain.presentationapi.LocationRepo
 import io.chthonic.weather.domain.presentationapi.WeatherRepo
 import javax.inject.Singleton
 
@@ -31,5 +32,10 @@ internal class DomainModule {
     @Provides
     @Singleton
     fun provideWeatherRepo(impl: WeatherRepoImpl): WeatherRepo =
+        impl
+
+    @Provides
+    @Singleton
+    fun provideLocationRepo(impl: LocationRepoImpl): LocationRepo =
         impl
 }
