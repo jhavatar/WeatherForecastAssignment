@@ -1,7 +1,6 @@
 package io.chthonic.data.weather.models
 
 import io.chthonic.weather.common.models.CurrentForecast
-import io.chthonic.weather.common.models.DayForecast
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import java.time.LocalDate

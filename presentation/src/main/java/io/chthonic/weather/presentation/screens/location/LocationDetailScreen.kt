@@ -17,6 +17,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -149,7 +150,9 @@ private fun DayItem(
         headlineContent = {
             Text(
                 text = state.dayName,
-                style = MaterialTheme.typography.titleMedium,
+                style = MaterialTheme.typography.titleLarge.copy(
+                    fontWeight = FontWeight.Medium,
+                ),
             )
         },
         trailingContent = {
@@ -160,20 +163,21 @@ private fun DayItem(
                 TemperatureText(
                     temperature = state.maxTemp,
                     units = units,
-                    valueTextStyle = MaterialTheme.typography.titleMedium.copy(
+                    valueTextStyle = MaterialTheme.typography.titleLarge.copy(
                         fontFamily = FontFamily.Monospace,
                         fontFeatureSettings = "tnum",
                     ),
-                    otherTextStyle = MaterialTheme.typography.titleMedium,
+                    otherTextStyle = MaterialTheme.typography.titleLarge,
                     color = MaterialTheme.colorScheme.onSurface,
                 )
                 TemperatureText(
                     temperature = state.minTemp,
                     units = units,
-                    valueTextStyle = MaterialTheme.typography.bodyMedium.copy(
+                    valueTextStyle = MaterialTheme.typography.bodyLarge.copy(
+                        fontFamily = FontFamily.Monospace,
                         fontFeatureSettings = "tnum"
                     ),
-                    otherTextStyle = MaterialTheme.typography.bodyMedium,
+                    otherTextStyle = MaterialTheme.typography.bodyLarge,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }

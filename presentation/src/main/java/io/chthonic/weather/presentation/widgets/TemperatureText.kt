@@ -19,9 +19,9 @@ fun TemperatureText(
     color: Color,
     valueTextStyle: TextStyle,
     otherTextStyle: TextStyle,
+    modifier: Modifier = Modifier,
     showDegrees: Boolean = true,
     showUnits: Boolean = true,
-    modifier: Modifier = Modifier,
     nullString: String = "--",
 ) {
     val temperatureValue = when (units) {
@@ -39,7 +39,7 @@ fun TemperatureText(
         verticalAlignment = Alignment.Top,
     ) {
         Text(
-            text = temperatureString, //.padStartToLength(3),
+            text = temperatureString,
             style = valueTextStyle,
             color = color,
         )
@@ -58,6 +58,3 @@ fun TemperatureText(
         }
     }
 }
-
-private fun String.padStartToLength(length: Int, padChar: Char = ' '): String =
-    padStart(maxOf(length, this.length), padChar)

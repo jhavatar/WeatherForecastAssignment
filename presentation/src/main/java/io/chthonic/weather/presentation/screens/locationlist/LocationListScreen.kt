@@ -229,11 +229,11 @@ private fun WeatherLocationItem(
                     temperature = state.temp,
                     units = units,
                     color = MaterialTheme.colorScheme.onSurface,
-                    valueTextStyle = MaterialTheme.typography.displayMedium.copy(
+                    valueTextStyle = MaterialTheme.typography.displaySmall.copy(
                         fontFamily = FontFamily.Monospace,
                         fontFeatureSettings = "tnum", // tabular numbers
                     ),
-                    otherTextStyle = MaterialTheme.typography.displayMedium,
+                    otherTextStyle = MaterialTheme.typography.displaySmall,
                     modifier = Modifier.alpha(if (state.isLoading) 0f else 1f),
                 )
                 AnimatedVisibility(visible = state.isLoading) {
@@ -260,7 +260,7 @@ private fun LocationSearchBar(
                 onSearch = { },
                 expanded = false,
                 onExpandedChange = { },
-                placeholder = { Text("Search sessions") },
+                placeholder = { Text("Search City") },
                 leadingIcon = {
                     Icon(Icons.Default.Search, contentDescription = null)
                 },
