@@ -15,7 +15,6 @@
             <option value="$PROJECT_DIR$/data/common" />
             <option value="$PROJECT_DIR$/data/geocoding" />
             <option value="$PROJECT_DIR$/data/location" />
-            <option value="$PROJECT_DIR$/data/rickmorty" />
             <option value="$PROJECT_DIR$/data/weather" />
             <option value="$PROJECT_DIR$/domain" />
             <option value="$PROJECT_DIR$/domain/dataapi" />

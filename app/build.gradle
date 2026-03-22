@@ -56,7 +56,6 @@ kotlin {
 dependencies {
     implementation libs.androidx.core
     implementation project(path: ':domain')
-    implementation project(path: ':data:rickmorty')
     implementation project(path: ':data:geocoding')
     implementation project(path: ':data:weather')
     implementation project(path: ':data:location')

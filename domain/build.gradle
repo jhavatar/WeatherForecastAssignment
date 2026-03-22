@@ -15,10 +15,10 @@ android {
         consumerProguardFiles "consumer-rules.pro"
     }
     lint {
-        targetSdk 36
+        targetSdk versions.targetSdk
     }
     testOptions {
-        targetSdk 36
+        targetSdk versions.targetSdk
     }
 }
 
