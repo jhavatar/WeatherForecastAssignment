@@ -1,8 +1,10 @@
 package io.chthonic.weather.presentation.theme
 
 import androidx.compose.material3.ColorScheme
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -144,8 +146,14 @@ object AppColors {
         else -> Color(0xFF380E08)   // red — extreme  (demo exact)
     }
 
-    fun temperatureCardColorLight(celsius: Double?): Color =
-        Color(0xFFF5EFE4)  // demo: all light cards same bg, temp shown via icon+text color
+    fun temperatureCardColorLight(celsius: Double?): Color = when {
+        celsius == null -> Color(0xFFF5EFE4)   // neutral parchment
+        celsius < 0 -> Color(0xFFE8F0EE)   // very faint teal tint
+        celsius < 14 -> Color(0xFFECF0EE)   // faint teal
+        celsius < 24 -> Color(0xFFF5EFE4)   // neutral — mild
+        celsius < 32 -> Color(0xFFF5EDE0)   // faint amber tint
+        else -> Color(0xFFF5E8E0)   // faint coral tint
+    }
 
     // Icon box colors per temperature
     fun temperatureIconBoxColor(celsius: Double?, isDark: Boolean): Color =
@@ -194,6 +202,20 @@ object AppColors {
     // Temperature Icon color
     fun temperatureIconTint(celsius: Double?, isDark: Boolean): Color =
         temperatureTextColor(celsius, isDark)
+
+    @Composable
+    fun appBarContainerColor(isDark: Boolean) = if (isDark) {
+        MaterialTheme.colorScheme.primaryContainer
+    } else {
+        MaterialTheme.colorScheme.primary
+    }
+
+    @Composable
+    fun appBarTitleContentColor(isDark: Boolean) = if (isDark) {
+        MaterialTheme.colorScheme.onPrimaryContainer
+    } else {
+        MaterialTheme.colorScheme.onPrimary
+    }
 }
 
 

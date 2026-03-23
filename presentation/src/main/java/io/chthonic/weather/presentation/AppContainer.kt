@@ -18,6 +18,7 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import io.chthonic.weather.presentation.theme.AppColors
 
 @Composable
 @OptIn(ExperimentalMaterial3Api::class)
@@ -47,16 +48,9 @@ fun AppContainer() {
             .fillMaxSize()
             .nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
-            val appBarContainerColor = if (isDark) {
-                MaterialTheme.colorScheme.primaryContainer
-            } else {
-                MaterialTheme.colorScheme.primary
-            }
-            val titleContentColor = if (isDark) {
-                MaterialTheme.colorScheme.onPrimaryContainer
-            } else {
-                MaterialTheme.colorScheme.onPrimary
-            }
+            val appBarContainerColor = AppColors.appBarContainerColor(isDark)
+            val titleContentColor = AppColors.appBarTitleContentColor(isDark)
+            
             when (appContainerState.appBarStyle) {
                 AppBarStyle.Pinned -> TopAppBar(
                     title = { Text(appContainerState.appBarTitle ?: "") },
@@ -75,6 +69,7 @@ fun AppContainer() {
                     title = { Text(appContainerState.appBarTitle ?: "") },
                     colors = TopAppBarDefaults.topAppBarColors(
                         containerColor = appBarContainerColor,
+                        scrolledContainerColor = appBarContainerColor,
                         titleContentColor = titleContentColor,
                         navigationIconContentColor = MaterialTheme.colorScheme.onPrimaryContainer,
                         actionIconContentColor = MaterialTheme.colorScheme.onPrimaryContainer,

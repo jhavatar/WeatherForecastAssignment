@@ -7,8 +7,8 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -108,7 +108,7 @@ private fun LocationDetailScreenContent(
     val spacing = LocalSpacing.current
     val isDark = isSystemInDarkTheme()
     LazyColumn(
-        modifier = Modifier.fillMaxSize(),
+        contentPadding = PaddingValues(vertical = spacing.m),
         verticalArrangement = Arrangement.spacedBy(spacing.xs),
     ) {
         when (listUiState) {
