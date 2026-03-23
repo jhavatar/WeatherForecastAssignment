@@ -21,7 +21,6 @@ ktor = "3.4.1"
 kotlinx-serialization = "1.10.0"
 kotlinx-immutables = "0.4.0"
 
-
 [libraries]
 # android
 androidx-core = { module = "androidx.core:core-ktx", version.ref = "androidx-core" }
@@ -62,6 +61,7 @@ compose-icons-extended = { group = "androidx.compose.material", name = "material
 compose-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview" }
 compose-tooling = { module = "androidx.compose.ui:ui-tooling" }
 compose-lifecycle-runtime = { group = "androidx.lifecycle", name = "lifecycle-runtime-compose-android", version.ref = "lifecycle" }
+compose-fonts = { group = "androidx.compose.ui", name = "ui-text-google-fonts" }
 
 # navigation
 navigation = { module = "androidx.navigation:navigation-ui-ktx", version.ref = "navigation" }

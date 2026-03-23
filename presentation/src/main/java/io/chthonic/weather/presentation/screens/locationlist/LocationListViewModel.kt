@@ -34,7 +34,7 @@ import kotlinx.coroutines.launch
 import timber.log.Timber
 import javax.inject.Inject
 
-private const val MY_LOCATION_DISPLAY_NAME = "My Location"
+private const val MY_LOCATION_DISPLAY_NAME = "MY LOCATION"
 
 @OptIn(ExperimentalCoroutinesApi::class, FlowPreview::class)
 @HiltViewModel
@@ -74,12 +74,15 @@ class LocationListViewModel @Inject constructor(
                 }
                 .collect { locations ->
                     // update state with locations immediately
-                    val postLoadingListUiState =
-                        if (locations.isEmpty()) ListUiState.Empty else ListUiState.Content
+                    val updatedListUiState = when {
+                        locations.isNotEmpty() -> ListUiState.Content
+                        state.value.searchText.isBlank() -> ListUiState.Idle
+                        else -> ListUiState.Empty
+                    }
                     _state.update {
                         it.copy(
                             searchLocations = locations,
-                            listUiState = if (it.listUiState == ListUiState.Loading) postLoadingListUiState else ListUiState.Content,
+                            listUiState = updatedListUiState,
                         )
                     }
 
@@ -116,7 +119,7 @@ class LocationListViewModel @Inject constructor(
         _state.update {
             it.copy(
                 searchText = query,
-                listUiState = if (query.isBlank()) ListUiState.Content else ListUiState.Loading,
+                listUiState = if (query.isBlank()) ListUiState.Idle else ListUiState.Loading,
             )
         }
     }

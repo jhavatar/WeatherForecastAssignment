@@ -6,7 +6,9 @@ import androidx.compose.animation.AnimatedContentScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionLayout
 import androidx.compose.animation.SharedTransitionScope
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import io.chthonic.weather.presentation.theme.AppTheme
 
 @Composable
 @OptIn(ExperimentalSharedTransitionApi::class)
@@ -14,7 +16,9 @@ import androidx.compose.runtime.Composable
 fun PreviewSharedAnimation(content: @Composable (SharedTransitionScope, AnimatedContentScope)-> Unit) {
     SharedTransitionLayout {
         AnimatedContent(targetState = null, label = "") {
-            content(this@SharedTransitionLayout, this)
+            AppTheme() {
+                content(this@SharedTransitionLayout, this)
+            }
         }
     }
 }

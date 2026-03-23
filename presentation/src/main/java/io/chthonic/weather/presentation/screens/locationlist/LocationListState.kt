@@ -7,7 +7,7 @@ import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 
 data class LocationListState(
-    val listUiState: ListUiState = ListUiState.Content,
+    val listUiState: ListUiState = ListUiState.Idle,
     val locationPermissionState: LocationPermissionState = LocationPermissionState.Unknown,
     val searchText: String = "",
     val myLocation: LocationCurrentWeather? = null,

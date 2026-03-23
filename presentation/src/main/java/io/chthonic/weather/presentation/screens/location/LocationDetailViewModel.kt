@@ -9,6 +9,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import io.chthonic.weather.common.models.Outcome
 import io.chthonic.weather.domain.presentationapi.WeatherRepo
 import io.chthonic.weather.presentation.models.ListUiState
+import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -49,7 +50,7 @@ class LocationDetailViewModel @AssistedInject constructor(
                     val dayWeatherList = outcome.data.map { it.toDayWeather() }
                     _state.update {
                         it.copy(
-                            dayWeatherList = dayWeatherList,
+                            dayWeatherList = dayWeatherList.toImmutableList(),
                             listUiState = if (dayWeatherList.isNotEmpty()) ListUiState.Content else ListUiState.Empty,
                         )
                     }

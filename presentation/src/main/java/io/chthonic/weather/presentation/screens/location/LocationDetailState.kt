@@ -2,6 +2,8 @@ package io.chthonic.weather.presentation.screens.location
 
 import io.chthonic.weather.presentation.models.ListUiState
 import io.chthonic.weather.presentation.models.TemperatureUnits
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.persistentListOf
 
 data class LocationDetailState(
     val name: String,
@@ -9,5 +11,5 @@ data class LocationDetailState(
     val lon: Double,
     val listUiState: ListUiState = ListUiState.Loading,
     val temperatureUnits: TemperatureUnits = TemperatureUnits.CELSIUS,
-    val dayWeatherList: List<DayWeather> = emptyList(),
+    val dayWeatherList: ImmutableList<DayWeather> = persistentListOf(),
 )

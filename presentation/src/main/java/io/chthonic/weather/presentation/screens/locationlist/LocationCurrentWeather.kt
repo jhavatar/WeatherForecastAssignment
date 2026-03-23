@@ -1,5 +1,8 @@
 package io.chthonic.weather.presentation.screens.locationlist
 
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.ErrorOutline
+import androidx.compose.material.icons.outlined.HourglassEmpty
 import androidx.compose.ui.graphics.vector.ImageVector
 import io.chthonic.weather.common.models.GeocodingCity
 import io.chthonic.weather.common.models.Location
@@ -28,8 +31,13 @@ data class LocationCurrentWeather(
         location.format()
     }
 
-    val weatherConditionIcon: ImageVector?
+    private val weatherConditionIcon: ImageVector?
         get() = weatherCondition?.toIcon()
+
+    val displayIcon: ImageVector
+        get() = (if (weatherError) Icons.Outlined.ErrorOutline else weatherConditionIcon)
+            ?: Icons.Outlined.HourglassEmpty
+
 }
 
 fun GeocodingCity.toLocationCurrentWeather(): LocationCurrentWeather = LocationCurrentWeather(

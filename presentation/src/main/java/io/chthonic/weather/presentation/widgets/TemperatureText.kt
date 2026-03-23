@@ -1,5 +1,11 @@
 package io.chthonic.weather.presentation.widgets
 
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.material3.Text
@@ -18,43 +24,53 @@ fun TemperatureText(
     units: TemperatureUnits,
     color: Color,
     valueTextStyle: TextStyle,
-    otherTextStyle: TextStyle,
+    unitsTextStyle: TextStyle,
     modifier: Modifier = Modifier,
     showDegrees: Boolean = true,
     showUnits: Boolean = true,
     nullString: String = "--",
 ) {
-    val temperatureValue = when (units) {
-        TemperatureUnits.CELSIUS -> temperature
-        TemperatureUnits.FAHRENHEIT -> temperature?.cToF()
-    }
+    AnimatedContent(
+        targetState = units,
+        transitionSpec = {
+            scaleIn(initialScale = 0.8f) + fadeIn() togetherWith
+                    scaleOut(targetScale = 0.8f) + fadeOut()
+        },
+        label = "units",
+    ) { currentUnits ->
 
-    temperatureValue?.toInt()
+        val temperatureValue = when (currentUnits) {
+            TemperatureUnits.CELSIUS -> temperature
+            TemperatureUnits.FAHRENHEIT -> temperature?.cToF()
+        }
 
-    val temperatureString = temperatureValue?.roundToInt()?.toString() ?: nullString
+        temperatureValue?.toInt()
 
-    Row(
-        modifier = modifier,
-        horizontalArrangement = Arrangement.Center,
-        verticalAlignment = Alignment.Top,
-    ) {
-        Text(
-            text = temperatureString,
-            style = valueTextStyle,
-            color = color,
-        )
+        val temperatureString = temperatureValue?.roundToInt()?.toString() ?: nullString
 
-        when {
-            showDegrees && showUnits -> units.toStringShort()
-            showDegrees -> "°"
-            showUnits -> units.toChar()
-            else -> null
-        }?.let {
+        Row(
+            modifier = modifier,
+            horizontalArrangement = Arrangement.Center,
+            verticalAlignment = Alignment.Top,
+        ) {
             Text(
-                text = it,
-                style = otherTextStyle,
+                text = temperatureString,
+                style = valueTextStyle,
                 color = color,
             )
+
+            when {
+                showDegrees && showUnits -> currentUnits.toStringShort()
+                showDegrees -> "°"
+                showUnits -> currentUnits.toChar()
+                else -> null
+            }?.let {
+                Text(
+                    text = it,
+                    style = unitsTextStyle,
+                    color = color,
+                )
+            }
         }
     }
 }
