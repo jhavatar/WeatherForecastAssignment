@@ -34,6 +34,7 @@ fun EmptyContent(
             Icons.Outlined.SearchOff,
             contentDescription = null,
             modifier = Modifier.size(100.dp),
+            tint = MaterialTheme.colorScheme.onSurfaceVariant,
         )
 
         Text(
@@ -42,6 +43,7 @@ fun EmptyContent(
             textAlign = TextAlign.Center,
             modifier = Modifier
                 .padding(spacing.m),
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
     }
 }

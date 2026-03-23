@@ -31,10 +31,6 @@ dependencies {
     implementation libs.coroutines.android
 
     // json
-    implementation libs.moshi.adapters
-    implementation libs.moshi.kotlin
-    implementation libs.moshi.kotlin.codegen
-    implementation libs.moshi
     implementation libs.ktorClient.serialization
     implementation libs.ktorClient.serializationJson
 
@@ -42,9 +38,7 @@ dependencies {
     implementation libs.hilt.android
     ksp libs.hilt.android.compiler
 
-    // net
-    implementation libs.okhttp
-    implementation libs.okhttp.logging.interceptor
+    // net / rest
     implementation libs.ktorClient.contentNegotiation
     implementation libs.ktorClient.android
     implementation libs.ktorClient.logging
