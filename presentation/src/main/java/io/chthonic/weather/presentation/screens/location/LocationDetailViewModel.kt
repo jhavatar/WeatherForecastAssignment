@@ -59,7 +59,7 @@ class LocationDetailViewModel @AssistedInject constructor(
                 is Outcome.Error -> {
                     _state.update {
                         it.copy(
-                            listUiState = ListUiState.Error
+                            listUiState = ListUiState.Error,
                         )
                     }
                 }

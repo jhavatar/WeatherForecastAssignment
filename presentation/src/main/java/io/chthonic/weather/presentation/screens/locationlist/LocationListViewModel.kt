@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.chthonic.weather.common.models.Location
+import io.chthonic.weather.common.models.Location.Companion.UNKNOWN_COORD
 import io.chthonic.weather.common.models.Outcome
 import io.chthonic.weather.domain.presentationapi.GeocodingRepo
 import io.chthonic.weather.domain.presentationapi.LocationRepo
@@ -11,6 +12,7 @@ import io.chthonic.weather.domain.presentationapi.WeatherRepo
 import io.chthonic.weather.presentation.models.ListUiState
 import io.chthonic.weather.presentation.models.LocationPermissionState
 import io.chthonic.weather.presentation.models.toWeatherCondition
+import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -59,22 +61,27 @@ class LocationListViewModel @Inject constructor(
                 .debounce(250)
                 .distinctUntilChanged()
                 .flatMapLatest { query ->
-                    if (query.isBlank()) return@flatMapLatest flowOf(persistentListOf())
+                    if (query.isBlank()) return@flatMapLatest flowOf(
+                        Outcome.Success(emptyList())
+                    )
                     flow {
-                        when (val outcome = geocodingRepo.searchCity(query)) {
-                            is Outcome.Success -> emit(
-                                outcome.data.map {
-                                    it.toLocationCurrentWeather()
-                                }.toImmutableList()
-                            )
-
-                            else -> emit(persistentListOf())
-                        }
+                        val outcome = geocodingRepo.searchCity(query)
+                        emit(outcome.map {
+                            it.map { city ->
+                                city.toLocationCurrentWeather()
+                            }
+                        })
                     }
                 }
-                .collect { locations ->
+                .collect { geocodingOutcome: Outcome<List<LocationCurrentWeather>> ->
+                    val locations: ImmutableList<LocationCurrentWeather> = when (geocodingOutcome) {
+                        is Outcome.Success -> geocodingOutcome.data.toImmutableList()
+                        is Outcome.Error -> persistentListOf()
+                    }
+
                     // update state with locations immediately
                     val updatedListUiState = when {
+                        geocodingOutcome is Outcome.Error -> ListUiState.Error
                         locations.isNotEmpty() -> ListUiState.Content
                         state.value.searchText.isBlank() -> ListUiState.Idle
                         else -> ListUiState.Empty
@@ -105,7 +112,7 @@ class LocationListViewModel @Inject constructor(
                             _state.update { state ->
                                 state.copy(
                                     searchLocations = state.searchLocations.map {
-                                        if (it.location.hashCode() == updated.location.hashCode()) updated else it
+                                        if (it.key == updated.key) updated else it
                                     }.toImmutableList(),
                                 )
                             }
@@ -164,7 +171,19 @@ class LocationListViewModel @Inject constructor(
                         }
 
                         is Outcome.Error -> {
-//                            _state.update { it.copy(locationError = outcome.message) }
+                            _state.update {
+                                it.copy(
+                                    // if there was an error, keep the previous location
+                                    myLocation = it.myLocation ?: LocationCurrentWeather(
+                                        location = Location(
+                                            lat = UNKNOWN_COORD,
+                                            lon = UNKNOWN_COORD,
+                                        ),
+                                        displayName = MY_LOCATION_DISPLAY_NAME,
+                                        weatherError = true,
+                                    )
+                                )
+                            }
                         }
                     }
                 }
@@ -180,7 +199,8 @@ class LocationListViewModel @Inject constructor(
             val updated = when (outcome) {
                 is Outcome.Success -> location.copy(
                     temp = outcome.data.temp,
-                    weatherCondition = outcome.data.weatherCode.toWeatherCondition()
+                    weatherCondition = outcome.data.weatherCode.toWeatherCondition(),
+                    weatherError = false,
                 )
 
                 else -> location.copy(weatherError = true)

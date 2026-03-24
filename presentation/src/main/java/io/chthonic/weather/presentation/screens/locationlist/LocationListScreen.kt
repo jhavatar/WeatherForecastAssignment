@@ -53,6 +53,7 @@ import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.chthonic.weather.common.models.Location
+import io.chthonic.weather.common.models.Location.Companion.UNKNOWN_COORD
 import io.chthonic.weather.presentation.AppBarStyle
 import io.chthonic.weather.presentation.AppContainerState
 import io.chthonic.weather.presentation.LaunchedEffectOnNavLifecycleState
@@ -539,10 +540,24 @@ private class WeatherLocationPreviewProvider : PreviewParameterProvider<Location
             weatherCondition = WeatherCondition.CLEAR_SKY,
         ),
         LocationCurrentWeather(
-            location = Location(12.4, 88.0),
+            location = Location(8.4, 88.0),
             displayName = "Moscow",
             temp = -12.0,
             weatherCondition = WeatherCondition.SNOW_MODERATE,
+        ),
+        LocationCurrentWeather(
+            location = Location(UNKNOWN_COORD, UNKNOWN_COORD),
+            displayName = "Error",
+            temp = null,
+            weatherCondition = null,
+            weatherError = true,
+        ),
+        LocationCurrentWeather(
+            location = Location(112.0, 88.0),
+            displayName = "Paris",
+            temp = null,
+            weatherCondition = null,
+            weatherError = true,
         ),
     )
 }
