@@ -4,6 +4,10 @@ data class Location(
     val lat: Double,
     val lon: Double,
 ) {
+
+    // Should be unique for each location
+    val key: String = "${lat}_${lon}"
+
     fun format(): String {
         return if (lat.isUnknown() || lon.isUnknown()) {
             "Location unavailable"

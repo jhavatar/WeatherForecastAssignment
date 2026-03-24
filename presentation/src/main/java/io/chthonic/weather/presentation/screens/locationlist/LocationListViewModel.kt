@@ -12,7 +12,6 @@ import io.chthonic.weather.domain.presentationapi.WeatherRepo
 import io.chthonic.weather.presentation.models.LocationPermissionState
 import io.chthonic.weather.presentation.models.toWeatherCondition
 import kotlinx.collections.immutable.ImmutableList
-import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
@@ -75,9 +74,9 @@ class LocationListViewModel @Inject constructor(
                 }
                 .collect { geocodingOutcome: Outcome<List<LocationCurrentWeather>> ->
                     val locations: ImmutableList<LocationCurrentWeather> = when (geocodingOutcome) {
-                        is Outcome.Success -> geocodingOutcome.data.toImmutableList()
-                        is Outcome.Error -> persistentListOf()
-                    }
+                        is Outcome.Success -> geocodingOutcome.data
+                        is Outcome.Error -> emptyList()
+                    }.toImmutableList()
 
                     // update state with locations immediately
                     _state.update {

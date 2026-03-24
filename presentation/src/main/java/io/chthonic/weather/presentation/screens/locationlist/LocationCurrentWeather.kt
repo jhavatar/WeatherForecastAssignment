@@ -17,9 +17,8 @@ data class LocationCurrentWeather(
     val weatherError: Boolean = false,
 ) {
 
-    val key: Int by lazy {
-        location.hashCode()
-    }
+    val key: String
+        get() = location.key
 
     val hasTemp: Boolean
         get() = temp != null
@@ -40,6 +39,6 @@ data class LocationCurrentWeather(
 }
 
 fun GeocodingCity.toLocationCurrentWeather(): LocationCurrentWeather = LocationCurrentWeather(
-    location = Location(lat = lat, lon = lon),
+    location = location,
     displayName = displayName,
 )

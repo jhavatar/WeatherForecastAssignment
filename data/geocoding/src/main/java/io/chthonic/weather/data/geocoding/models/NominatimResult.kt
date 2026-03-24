@@ -1,6 +1,7 @@
 package io.chthonic.weather.data.geocoding.models
 
 import io.chthonic.weather.common.models.GeocodingCity
+import io.chthonic.weather.common.models.Location
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -12,10 +13,10 @@ internal data class NominatimResult(
     val address: NominatimAddress? = null,
 ) {
     fun toDomainModel(): GeocodingCity = GeocodingCity(
-        lat,
-        lon,
-        address?.city?.let { city -> "$city${address.country?.let { ", $it" } ?: ""}" }
-            ?: displayName
+        location = Location(lat = lat, lon = lon),
+        address?.city?.let { city ->
+            "$city${address.country?.let { ", $it" } ?: ""}"
+        } ?: displayName
     )
 }
 
