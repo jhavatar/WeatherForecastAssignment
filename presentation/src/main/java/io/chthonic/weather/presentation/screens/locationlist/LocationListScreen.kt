@@ -1,9 +1,7 @@
 package io.chthonic.weather.presentation.screens.locationlist
 
-import androidx.compose.animation.AnimatedContentScope
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalSharedTransitionApi
-import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.background
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
@@ -57,6 +55,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.chthonic.weather.common.models.Location
 import io.chthonic.weather.presentation.AppBarStyle
 import io.chthonic.weather.presentation.AppContainerState
+import io.chthonic.weather.presentation.LaunchedEffectOnNavLifecycleState
 import io.chthonic.weather.presentation.R
 import io.chthonic.weather.presentation.models.ListUiState
 import io.chthonic.weather.presentation.models.TemperatureUnits
@@ -85,15 +84,14 @@ import kotlinx.collections.immutable.toImmutableList
 @OptIn(ExperimentalSharedTransitionApi::class)
 fun LocationListScreen(
     viewModel: LocationListViewModel = hiltViewModel(),
-    sharedTransitionScope: SharedTransitionScope,
-    animatedContentScope: AnimatedContentScope,
     appContainerState: AppContainerState,
 ) {
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
     val state = viewModel.state.collectAsStateWithLifecycle()
 
-    LaunchedEffect(Unit) {
+    LaunchedEffectOnNavLifecycleState(Lifecycle.State.STARTED) {
+        // only update (as soon as possible) on nav change
         appContainerState.updateAppBar(
             title = context.resources.getString(R.string.app_name),
             showNavigationIcon = false,

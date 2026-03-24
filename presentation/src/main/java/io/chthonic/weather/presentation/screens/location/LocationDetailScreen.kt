@@ -1,8 +1,6 @@
 package io.chthonic.weather.presentation.screens.location
 
-import androidx.compose.animation.AnimatedContentScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
-import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.background
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
@@ -23,7 +21,6 @@ import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -33,9 +30,11 @@ import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.chthonic.weather.presentation.AppBarStyle
 import io.chthonic.weather.presentation.AppContainerState
+import io.chthonic.weather.presentation.LaunchedEffectOnNavLifecycleState
 import io.chthonic.weather.presentation.models.ListUiState
 import io.chthonic.weather.presentation.models.TemperatureUnits
 import io.chthonic.weather.presentation.models.WeatherCondition
@@ -62,8 +61,6 @@ fun LocationDetailScreen(
     name: String,
     lat: Double,
     lon: Double,
-    sharedTransitionScope: SharedTransitionScope,
-    animatedContentScope: AnimatedContentScope,
     appContainerState: AppContainerState,
 ) {
     val viewModel =
@@ -77,7 +74,8 @@ fun LocationDetailScreen(
 
     val state = viewModel.state.collectAsStateWithLifecycle()
 
-    LaunchedEffect(Unit) {
+    LaunchedEffectOnNavLifecycleState(Lifecycle.State.STARTED) {
+        // only update (as soon as possible) on nav change
         appContainerState.updateAppBar(
             title = state.value.name,
             showNavigationIcon = true,

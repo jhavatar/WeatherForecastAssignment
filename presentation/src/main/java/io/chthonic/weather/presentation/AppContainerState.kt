@@ -27,7 +27,7 @@ class AppContainerState(
     var appBarStyle by mutableStateOf(AppBarStyle.Pinned)
         private set
 
-    var appBarShowNavigationIcon by mutableStateOf<Boolean>(false)
+    var appBarShowNavigationIcon by mutableStateOf(false)
         private set
 
     var appBarActions by mutableStateOf<(@Composable RowScope.() -> Unit)?>(null)
@@ -48,6 +48,8 @@ class AppContainerState(
     fun clearAppBar() {
         appBarTitle = null
         appBarStyle = AppBarStyle.Pinned
+        appBarShowNavigationIcon = false
+        appBarActions = null
     }
 
     fun showSnackbar(message: String, duration: SnackbarDuration = SnackbarDuration.Short) {
