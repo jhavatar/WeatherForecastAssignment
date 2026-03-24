@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -38,6 +39,7 @@ import io.chthonic.weather.presentation.AppContainerState
 import io.chthonic.weather.presentation.models.ListUiState
 import io.chthonic.weather.presentation.models.TemperatureUnits
 import io.chthonic.weather.presentation.models.WeatherCondition
+import io.chthonic.weather.presentation.nav.Destination
 import io.chthonic.weather.presentation.theme.AppColors
 import io.chthonic.weather.presentation.theme.LocalSpacing
 import io.chthonic.weather.presentation.theme.Spacing
@@ -81,7 +83,8 @@ fun LocationDetailScreen(
             )
         }
     }
-    appContainerState.updateAppBar(
+    appContainerState.updateAppBarForDestination(
+        destination = Destination.LocationDetail,
         title = state.value.name,
         showNavigationIcon = true,
         style = AppBarStyle.Large,
@@ -107,6 +110,7 @@ private fun LocationDetailScreenContent(
     LazyColumn(
         contentPadding = PaddingValues(vertical = spacing.m),
         verticalArrangement = Arrangement.spacedBy(spacing.xs),
+        modifier = Modifier.fillMaxSize(),
     ) {
         when (listUiState) {
             ListUiState.Loading, ListUiState.Idle -> item(LOADING_CONTENT_KEY) {

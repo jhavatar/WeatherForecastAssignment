@@ -30,19 +30,6 @@ fun AppContainer() {
     }
     val isDark = isSystemInDarkTheme()
 
-    val navigationIcon = if (appContainerState.appBarShowNavigationIcon) {
-        @Composable {
-            IconButton(onClick = { appContainerState.navController.popBackStack() }) {
-                Icon(
-                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                    contentDescription = "Back",
-                    modifier = Modifier,
-                )
-            }
-        }
-    } else {
-        {}
-    }
     Scaffold(
         modifier = Modifier
             .fillMaxSize()
@@ -50,7 +37,21 @@ fun AppContainer() {
         topBar = {
             val appBarContainerColor = AppColors.appBarContainerColor(isDark)
             val titleContentColor = AppColors.appBarTitleContentColor(isDark)
-            
+            val navigationIcon = if (appContainerState.appBarShowNavigationIcon) {
+                @Composable {
+                    IconButton(onClick = { appContainerState.navController.popBackStack() }) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = "Back",
+                            modifier = Modifier,
+                            tint = titleContentColor,
+                        )
+                    }
+                }
+            } else {
+                {}
+            }
+
             when (appContainerState.appBarStyle) {
                 AppBarStyle.Pinned -> TopAppBar(
                     title = { Text(appContainerState.appBarTitle ?: "") },

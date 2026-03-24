@@ -100,7 +100,8 @@ fun LocationListScreen(
             )
         }
     }
-    appContainerState.updateAppBar(
+    appContainerState.updateAppBarForDestination(
+        destination = Destination.LocationList,
         title = context.resources.getString(R.string.app_name),
         showNavigationIcon = false,
         style = AppBarStyle.Pinned,
@@ -169,8 +170,7 @@ private fun LocationListContent(
     val spacing = LocalSpacing.current
     val isDark = isSystemInDarkTheme()
     LazyColumn(
-        modifier = Modifier
-            .fillMaxSize(),
+        modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.spacedBy(spacing.xs),
     ) {
 

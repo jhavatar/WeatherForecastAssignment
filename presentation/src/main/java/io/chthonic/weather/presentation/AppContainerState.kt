@@ -11,7 +11,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.navigation.NavHostController
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import io.chthonic.weather.presentation.nav.Destination
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
@@ -33,23 +35,21 @@ class AppContainerState(
     var appBarActions by mutableStateOf<(@Composable RowScope.() -> Unit)?>(null)
         private set
 
-    fun updateAppBar(
+    @Composable
+    fun updateAppBarForDestination(
+        destination: Destination, // prevent screens/destinations fighting over state during transitions
         title: String? = null,
         showNavigationIcon: Boolean = false,
         style: AppBarStyle = AppBarStyle.Pinned,
         actions: (@Composable RowScope.() -> Unit)? = null,
     ) {
+        val currentRoute = navController.currentBackStackEntryAsState().value?.destination?.route
+        if (currentRoute != destination.route) return
+
         appBarTitle = title
         appBarStyle = style
         appBarShowNavigationIcon = showNavigationIcon
         appBarActions = actions
-    }
-
-    fun clearAppBar() {
-        appBarTitle = null
-        appBarStyle = AppBarStyle.Pinned
-        appBarShowNavigationIcon = false
-        appBarActions = null
     }
 
     fun showSnackbar(message: String, duration: SnackbarDuration = SnackbarDuration.Short) {
