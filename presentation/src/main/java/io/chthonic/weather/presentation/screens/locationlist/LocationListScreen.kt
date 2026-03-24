@@ -7,6 +7,7 @@ import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
@@ -36,6 +37,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -56,7 +58,6 @@ import io.chthonic.weather.common.models.Location
 import io.chthonic.weather.common.models.Location.Companion.UNKNOWN_COORD
 import io.chthonic.weather.presentation.AppBarStyle
 import io.chthonic.weather.presentation.AppContainerState
-import io.chthonic.weather.presentation.LaunchedEffectOnNavLifecycleState
 import io.chthonic.weather.presentation.R
 import io.chthonic.weather.presentation.models.ListUiState
 import io.chthonic.weather.presentation.models.TemperatureUnits
@@ -91,20 +92,20 @@ fun LocationListScreen(
     val lifecycleOwner = LocalLifecycleOwner.current
     val state = viewModel.state.collectAsStateWithLifecycle()
 
-    LaunchedEffectOnNavLifecycleState(Lifecycle.State.STARTED) {
-        // only update (as soon as possible) on nav change
-        appContainerState.updateAppBar(
-            title = context.resources.getString(R.string.app_name),
-            showNavigationIcon = false,
-            style = AppBarStyle.Pinned,
-            actions = {
-                TemperatureUnitsButton(
-                    state.value.temperatureUnits,
-                    viewModel::onToggleTemperatureUnits,
-                )
-            }
-        )
+    val actions: (@Composable RowScope.() -> Unit) = remember(state.value.temperatureUnits) {
+        {
+            TemperatureUnitsButton(
+                state.value.temperatureUnits,
+                viewModel::onToggleTemperatureUnits,
+            )
+        }
     }
+    appContainerState.updateAppBar(
+        title = context.resources.getString(R.string.app_name),
+        showNavigationIcon = false,
+        style = AppBarStyle.Pinned,
+        actions = actions,
+    )
 
     LaunchedEffect(Unit) {
         viewModel.navigationEvent.collect { event ->
