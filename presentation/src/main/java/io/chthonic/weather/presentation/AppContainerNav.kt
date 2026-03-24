@@ -54,7 +54,6 @@ fun AppContainerNavHost(
     appContainerState: AppContainerState,
     modifier: Modifier,
 ) = SharedTransitionLayout(modifier = modifier) {
-    val sharedTransitionScope = this@SharedTransitionLayout
     NavHost(
         navController = appContainerState.navController,
         startDestination = Destination.LocationList.route,
@@ -62,7 +61,7 @@ fun AppContainerNavHost(
     ) {
         composableWithLocalNavLifecycle(
             route = Destination.LocationList.route,
-        ) { backStackEntry ->
+        ) {
             LocationListScreen(
                 appContainerState = appContainerState,
             )

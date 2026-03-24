@@ -5,7 +5,7 @@ data class Location(
     val lon: Double,
 ) {
     fun format(): String {
-        return if (lat.isNaN() || lon.isNaN()) {
+        return if (lat.isUnknown() || lon.isUnknown()) {
             "Location unavailable"
         } else {
             val lat = "%.4f° %s".format(Math.abs(lat), if (lat >= 0) "N" else "S")

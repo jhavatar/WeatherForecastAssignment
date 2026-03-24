@@ -230,14 +230,6 @@ private fun LocationListContent(
                 )
             }
 
-
-            ListUiState.Empty -> item(EMPTY_CONTENT_KEY) {
-                EmptyContent(
-                    spacing = spacing,
-                    modifier = Modifier.fillParentMaxHeight(0.5f),
-                )
-            }
-
             ListUiState.Error -> item(ERROR_CONTENT_KEY) {
                 ErrorContent(
                     spacing = spacing,
