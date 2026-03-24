@@ -69,14 +69,6 @@ dependencies {
     implementation libs.coroutines.core
     implementation libs.coroutines.android
 
-    // image
-    implementation libs.coil
-    implementation libs.coil.compose
-
-    // paging
-    implementation libs.paging.runtime
-    implementation libs.paging.compose
-
     // logging
     implementation libs.timber
 

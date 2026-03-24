@@ -37,7 +37,6 @@ data class LocationCurrentWeather(
     val displayIcon: ImageVector
         get() = (if (weatherError) Icons.Outlined.ErrorOutline else weatherConditionIcon)
             ?: Icons.Outlined.HourglassEmpty
-
 }
 
 fun GeocodingCity.toLocationCurrentWeather(): LocationCurrentWeather = LocationCurrentWeather(

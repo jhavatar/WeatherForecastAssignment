@@ -9,7 +9,6 @@ import io.chthonic.weather.common.models.Outcome
 import io.chthonic.weather.domain.presentationapi.GeocodingRepo
 import io.chthonic.weather.domain.presentationapi.LocationRepo
 import io.chthonic.weather.domain.presentationapi.WeatherRepo
-import io.chthonic.weather.presentation.models.ListUiState
 import io.chthonic.weather.presentation.models.LocationPermissionState
 import io.chthonic.weather.presentation.models.toWeatherCondition
 import kotlinx.collections.immutable.ImmutableList
@@ -44,6 +43,7 @@ class LocationListViewModel @Inject constructor(
     private val geocodingRepo: GeocodingRepo,
     private val weatherRepo: WeatherRepo,
     private val locationRepo: LocationRepo,
+    private val listUiStateResolver: LocationListUiStateResolver,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(LocationListState())
@@ -80,16 +80,14 @@ class LocationListViewModel @Inject constructor(
                     }
 
                     // update state with locations immediately
-                    val updatedListUiState = when {
-                        geocodingOutcome is Outcome.Error -> ListUiState.Error
-                        locations.isNotEmpty() -> ListUiState.Content
-                        state.value.searchText.isBlank() -> ListUiState.Idle
-                        else -> ListUiState.Empty
-                    }
                     _state.update {
                         it.copy(
                             searchLocations = locations,
-                            listUiState = updatedListUiState,
+                            listUiState = listUiStateResolver.resolveOnSearchResult(
+                                geocodingOutcome = geocodingOutcome,
+                                locations = locations,
+                                searchText = state.value.searchText,
+                            ),
                         )
                     }
 
@@ -126,7 +124,7 @@ class LocationListViewModel @Inject constructor(
         _state.update {
             it.copy(
                 searchText = query,
-                listUiState = if (query.isBlank()) ListUiState.Idle else ListUiState.Loading,
+                listUiState = listUiStateResolver.resolveOnSearchAction(query),
             )
         }
     }
