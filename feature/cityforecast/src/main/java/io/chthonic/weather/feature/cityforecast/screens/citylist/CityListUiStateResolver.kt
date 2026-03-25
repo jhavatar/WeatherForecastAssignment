@@ -1,10 +1,10 @@
-package io.chthonic.weather.feature.cityforecast.screens.locationlist
+package io.chthonic.weather.feature.cityforecast.screens.citylist
 
 import io.chthonic.weather.common.models.Outcome
 import io.chthonic.weather.feature.cityforecast.models.ListUiState
 import javax.inject.Inject
 
-internal class LocationListUiStateResolver @Inject constructor() {
+internal class CityListUiStateResolver @Inject constructor() {
 
     fun resolveOnSearchAction(query: String): ListUiState =
         if (query.isBlank()) ListUiState.Idle else ListUiState.Loading

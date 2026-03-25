@@ -2,7 +2,7 @@ package io.chthonic.weather.feature.cityforecast.theme
 
 import androidx.compose.ui.graphics.Color
 
-object TempColors {
+internal object TemperatureColors {
     // ─────────────────────────────────────────────────────────────────────────────
     // TEMPERATURE CARD COLOR
     // Call this to get the card containerColor based on celsius temperature.

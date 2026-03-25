@@ -3,17 +3,19 @@ package io.chthonic.weather.feature.cityforecast.screens.locationlist
 import io.chthonic.weather.common.models.Location
 import io.chthonic.weather.common.models.Outcome
 import io.chthonic.weather.feature.cityforecast.models.ListUiState
+import io.chthonic.weather.feature.cityforecast.screens.citylist.LocationCurrentWeather
+import io.chthonic.weather.feature.cityforecast.screens.citylist.CityListUiStateResolver
 import junit.framework.TestCase.assertEquals
 import org.junit.Before
 import org.junit.Test
 
-internal class LocationListUiStateResolverTest {
+internal class CityListUiStateResolverTest {
 
-    private lateinit var resolver: LocationListUiStateResolver
+    private lateinit var resolver: CityListUiStateResolver
 
     @Before
     fun setup() {
-        resolver = LocationListUiStateResolver()
+        resolver = CityListUiStateResolver()
     }
 
     // -------------------------------------------------------------------------

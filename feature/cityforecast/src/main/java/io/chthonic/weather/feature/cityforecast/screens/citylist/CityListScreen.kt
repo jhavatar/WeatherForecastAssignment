@@ -1,4 +1,4 @@
-package io.chthonic.weather.feature.cityforecast.screens.locationlist
+package io.chthonic.weather.feature.cityforecast.screens.citylist
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalSharedTransitionApi
@@ -60,7 +60,7 @@ import io.chthonic.weather.feature.cityforecast.CityForecastDestination
 import io.chthonic.weather.feature.cityforecast.models.ListUiState
 import io.chthonic.weather.feature.cityforecast.models.TemperatureUnits
 import io.chthonic.weather.feature.cityforecast.models.WeatherCondition
-import io.chthonic.weather.feature.cityforecast.theme.TempColors
+import io.chthonic.weather.feature.cityforecast.theme.TemperatureColors
 import io.chthonic.weather.feature.cityforecast.widgets.EMPTY_CONTENT_KEY
 import io.chthonic.weather.feature.cityforecast.widgets.ERROR_CONTENT_KEY
 import io.chthonic.weather.feature.cityforecast.widgets.EmptyContent
@@ -84,8 +84,8 @@ import kotlinx.collections.immutable.toImmutableList
 
 @Composable
 @OptIn(ExperimentalSharedTransitionApi::class)
-internal fun LocationListScreen(
-    viewModel: LocationListViewModel = hiltViewModel(),
+internal fun CityListScreen(
+    viewModel: CityListViewModel = hiltViewModel(),
     appContainerState: AppContainerState,
 ) {
     val context = LocalContext.current
@@ -101,7 +101,7 @@ internal fun LocationListScreen(
         }
     }
     appContainerState.updateAppBarForDestination(
-        destinationRoute = CityForecastDestination.LocationList.route,
+        destinationRoute = CityForecastDestination.CityList.route,
         title = context.resources.getString(R.string.app_name),
         showNavigationIcon = false,
         style = AppBarStyle.Pinned,
@@ -111,9 +111,9 @@ internal fun LocationListScreen(
     LaunchedEffect(Unit) {
         viewModel.navigationEvent.collect { event ->
             when (event) {
-                is NavigationEvent.ToLocationDetail -> {
+                is NavigationEvent.ToCityDetail -> {
                     appContainerState.navController.navigate(
-                        CityForecastDestination.LocationDetail.buildUniqueRoute(
+                        CityForecastDestination.CityDetail.buildUniqueRoute(
                             name = event.name,
                             lat = event.lat,
                             lon = event.lon,
@@ -145,7 +145,7 @@ internal fun LocationListScreen(
         context = context,
     )
 
-    LocationListContent(
+    CityListContent(
         myLocation = state.value.myLocation,
         locations = state.value.searchLocations,
         searchText = state.value.searchText,
@@ -158,7 +158,7 @@ internal fun LocationListScreen(
 
 @Composable
 @OptIn(ExperimentalSharedTransitionApi::class)
-private fun LocationListContent(
+private fun CityListContent(
     myLocation: LocationCurrentWeather?,
     locations: ImmutableList<LocationCurrentWeather>,
     searchText: String,
@@ -279,12 +279,12 @@ private fun WeatherLocationItem(
             .padding(horizontal = spacing.m, vertical = spacing.xs),
         shape = MaterialTheme.shapes.large,
         colors = CardDefaults.cardColors(
-            containerColor = TempColors.temperatureCardColor(state.temp, isDark),
+            containerColor = TemperatureColors.temperatureCardColor(state.temp, isDark),
         ),
         elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
     ) {
         ListItem(
-            modifier = Modifier,// .clickable(onClick = onClick),
+            modifier = Modifier,
             colors = ListItemDefaults.colors(
                 containerColor = Color.Transparent, // let the Card background show
             ),
@@ -294,7 +294,7 @@ private fun WeatherLocationItem(
                     modifier = Modifier
                         .size(48.dp)
                         .background(
-                            color = TempColors.temperatureIconBoxColor(state.temp, isDark),
+                            color = TemperatureColors.temperatureIconBoxColor(state.temp, isDark),
                             shape = MaterialTheme.shapes.medium,
                         ),
                 ) {
@@ -302,7 +302,7 @@ private fun WeatherLocationItem(
                         state.displayIcon,
                         contentDescription = state.weatherCondition?.description,
                         modifier = Modifier.size(28.dp),
-                        tint = TempColors.temperatureIconTint(state.temp, isDark),
+                        tint = TemperatureColors.temperatureIconTint(state.temp, isDark),
                     )
 
                     if (isMyLocation) {
@@ -349,7 +349,7 @@ private fun WeatherLocationItem(
                     TemperatureText(
                         temperature = state.temp,
                         units = units,
-                        color = TempColors.temperatureTextColor(state.temp, isDark),
+                        color = TemperatureColors.temperatureTextColor(state.temp, isDark),
                         valueTextStyle = MaterialTheme.typography.displaySmall.copy(
                             fontFamily = FontFamily.Monospace,
                             fontFeatureSettings = "tnum", // tabular numbers
@@ -416,7 +416,7 @@ private fun LocationSearchBar(
 @Composable
 private fun PreviewListContentState() {
     PreviewSharedAnimation { sharedTransitionScope, animatedContentScope ->
-        LocationListContent(
+        CityListContent(
             myLocation = LocationCurrentWeather(
                 location = Location(12.0, 13.0),
                 displayName = "MY LOCATION",
@@ -438,7 +438,7 @@ private fun PreviewListContentState() {
 @Composable
 private fun PreviewListIdleState() {
     PreviewSharedAnimation { sharedTransitionScope, animatedContentScope ->
-        LocationListContent(
+        CityListContent(
             myLocation = LocationCurrentWeather(
                 location = Location(12.0, 13.0),
                 displayName = "MY LOCATION",
@@ -459,7 +459,7 @@ private fun PreviewListIdleState() {
 @Composable
 private fun PreviewListEmptyState() {
     PreviewSharedAnimation { sharedTransitionScope, animatedContentScope ->
-        LocationListContent(
+        CityListContent(
             myLocation = LocationCurrentWeather(
                 location = Location(12.0, 13.0),
                 displayName = "MY LOCATION",
@@ -480,7 +480,7 @@ private fun PreviewListEmptyState() {
 @Composable
 private fun PreviewListErrorState() {
     PreviewSharedAnimation { sharedTransitionScope, animatedContentScope ->
-        LocationListContent(
+        CityListContent(
             myLocation = LocationCurrentWeather(
                 location = Location(12.0, 13.0),
                 displayName = "MY LOCATION",

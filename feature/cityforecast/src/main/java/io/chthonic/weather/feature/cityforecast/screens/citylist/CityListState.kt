@@ -1,4 +1,4 @@
-package io.chthonic.weather.feature.cityforecast.screens.locationlist
+package io.chthonic.weather.feature.cityforecast.screens.citylist
 
 import io.chthonic.weather.feature.cityforecast.models.ListUiState
 import io.chthonic.weather.feature.cityforecast.models.LocationPermissionState
@@ -6,7 +6,7 @@ import io.chthonic.weather.feature.cityforecast.models.TemperatureUnits
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 
-internal data class LocationListState(
+internal data class CityListState(
     val listUiState: ListUiState = ListUiState.Idle,
     val locationPermissionState: LocationPermissionState = LocationPermissionState.Unknown,
     val searchText: String = "",

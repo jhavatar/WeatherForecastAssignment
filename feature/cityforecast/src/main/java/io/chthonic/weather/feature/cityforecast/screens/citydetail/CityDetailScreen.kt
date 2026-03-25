@@ -1,4 +1,4 @@
-package io.chthonic.weather.feature.cityforecast.screens.location
+package io.chthonic.weather.feature.cityforecast.screens.citydetail
 
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.foundation.background
@@ -38,7 +38,7 @@ import io.chthonic.weather.feature.cityforecast.CityForecastDestination
 import io.chthonic.weather.feature.cityforecast.models.ListUiState
 import io.chthonic.weather.feature.cityforecast.models.TemperatureUnits
 import io.chthonic.weather.feature.cityforecast.models.WeatherCondition
-import io.chthonic.weather.feature.cityforecast.theme.TempColors
+import io.chthonic.weather.feature.cityforecast.theme.TemperatureColors
 import io.chthonic.weather.feature.cityforecast.widgets.EMPTY_CONTENT_KEY
 import io.chthonic.weather.feature.cityforecast.widgets.ERROR_CONTENT_KEY
 import io.chthonic.weather.feature.cityforecast.widgets.EmptyContent
@@ -59,14 +59,14 @@ import java.time.LocalDate
 
 @Composable
 @OptIn(ExperimentalSharedTransitionApi::class)
-internal fun LocationDetailScreen(
+internal fun CityDetailScreen(
     name: String,
     lat: Double,
     lon: Double,
     appContainerState: AppContainerState,
 ) {
     val viewModel =
-        hiltViewModel<LocationDetailViewModel, LocationDetailViewModel.LocationDetailViewModelFactory> { factory ->
+        hiltViewModel<CityDetailViewModel, CityDetailViewModel.CityDetailViewModelFactory> { factory ->
             factory.create(
                 name = name,
                 lat = lat,
@@ -84,14 +84,14 @@ internal fun LocationDetailScreen(
         }
     }
     appContainerState.updateAppBarForDestination(
-        destinationRoute = CityForecastDestination.LocationDetail.route,
+        destinationRoute = CityForecastDestination.CityDetail.route,
         title = state.value.name,
         showNavigationIcon = true,
         style = AppBarStyle.Large,
         actions = actions,
     )
 
-    LocationDetailScreenContent(
+    CityDetailScreenContent(
         state.value.dayWeatherList,
         state.value.listUiState,
         state.value.temperatureUnits,
@@ -100,7 +100,7 @@ internal fun LocationDetailScreen(
 
 @Composable
 @OptIn(ExperimentalSharedTransitionApi::class)
-private fun LocationDetailScreenContent(
+private fun CityDetailScreenContent(
     dayWeatherList: ImmutableList<DayWeather>,
     listUiState: ListUiState,
     units: TemperatureUnits,
@@ -169,7 +169,7 @@ private fun DayItem(
             .padding(horizontal = spacing.m, vertical = spacing.xs),
         shape = MaterialTheme.shapes.large,
         colors = CardDefaults.cardColors(
-            containerColor = TempColors.temperatureCardColor(state.maxTemp, isDark),
+            containerColor = TemperatureColors.temperatureCardColor(state.maxTemp, isDark),
         ),
         elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
     ) {
@@ -184,7 +184,10 @@ private fun DayItem(
                     modifier = Modifier
                         .size(48.dp)
                         .background(
-                            color = TempColors.temperatureIconBoxColor(state.maxTemp, isDark),
+                            color = TemperatureColors.temperatureIconBoxColor(
+                                state.maxTemp,
+                                isDark,
+                            ),
                             shape = MaterialTheme.shapes.medium,
                         ),
                 ) {
@@ -192,7 +195,7 @@ private fun DayItem(
                         imageVector = state.weatherConditionIcon,
                         contentDescription = state.weatherCondition.description,
                         modifier = Modifier.size(28.dp),
-                        tint = TempColors.temperatureIconTint(state.maxTemp, isDark),
+                        tint = TemperatureColors.temperatureIconTint(state.maxTemp, isDark),
                     )
                 }
             },
@@ -220,7 +223,7 @@ private fun DayItem(
                         unitsTextStyle = MaterialTheme.typography.titleSmall.copy(
                             fontWeight = FontWeight.Medium,
                         ),
-                        color = TempColors.temperatureTextColor(state.maxTemp, isDark),
+                        color = TemperatureColors.temperatureTextColor(state.maxTemp, isDark),
                     )
                     TemperatureText(
                         temperature = state.minTemp,
@@ -245,7 +248,7 @@ private fun DayItem(
 @Composable
 private fun PreviewListContentState() {
     PreviewSharedAnimation { sharedTransitionScope, animatedContentScope ->
-        LocationDetailScreenContent(
+        CityDetailScreenContent(
             dayWeatherList = DayWeatherPreviewProvider().values.toImmutableList(),
             listUiState = ListUiState.Content,
             units = TemperatureUnits.CELSIUS,
@@ -257,7 +260,7 @@ private fun PreviewListContentState() {
 @Composable
 private fun PreviewListEmptyState() {
     PreviewSharedAnimation { sharedTransitionScope, animatedContentScope ->
-        LocationDetailScreenContent(
+        CityDetailScreenContent(
             dayWeatherList = persistentListOf(),
             listUiState = ListUiState.Empty,
             units = TemperatureUnits.CELSIUS,
@@ -269,7 +272,7 @@ private fun PreviewListEmptyState() {
 @Composable
 private fun PreviewListLoadingState() {
     PreviewSharedAnimation { sharedTransitionScope, animatedContentScope ->
-        LocationDetailScreenContent(
+        CityDetailScreenContent(
             dayWeatherList = persistentListOf(),
             listUiState = ListUiState.Loading,
             units = TemperatureUnits.CELSIUS,
@@ -282,7 +285,7 @@ private fun PreviewListLoadingState() {
 @Composable
 private fun PreviewListErrorState() {
     PreviewSharedAnimation { sharedTransitionScope, animatedContentScope ->
-        LocationDetailScreenContent(
+        CityDetailScreenContent(
             dayWeatherList = persistentListOf(),
             listUiState = ListUiState.Error,
             units = TemperatureUnits.CELSIUS,

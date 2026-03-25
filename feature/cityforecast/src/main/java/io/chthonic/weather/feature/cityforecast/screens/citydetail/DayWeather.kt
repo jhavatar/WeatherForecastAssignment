@@ -1,4 +1,4 @@
-package io.chthonic.weather.feature.cityforecast.screens.location
+package io.chthonic.weather.feature.cityforecast.screens.citydetail
 
 import androidx.compose.ui.graphics.vector.ImageVector
 import io.chthonic.weather.common.models.DayForecast

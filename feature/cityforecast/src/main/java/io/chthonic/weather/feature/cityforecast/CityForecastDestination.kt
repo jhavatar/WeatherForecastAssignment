@@ -10,19 +10,21 @@ private const val LOC_LAT_ARG: String = "lat"
 private const val LOC_LON_ARG: String = "lon"
 private const val LOC_NAME_ARG: String = "name"
 
-sealed class CityForecastDestination(val route: String, val arguments: List<NamedNavArgument> = emptyList()) {
+sealed class CityForecastDestination(
+    val route: String,
+    val arguments: List<NamedNavArgument> = emptyList()
+) {
 
-    data object LocationList : CityForecastDestination(route = "locations")
+    data object CityList : CityForecastDestination(route = "locations")
 
-    data object LocationDetail :
+    data object CityDetail :
         CityForecastDestination(
             route = "location/{$LOC_NAME_ARG}/{$LOC_LAT_ARG}/{$LOC_LON_ARG}",
             arguments = listOf(
                 navArgument(LOC_NAME_ARG) { type = NavType.StringType },
                 navArgument(LOC_LAT_ARG) { type = NavType.StringType },
                 navArgument(LOC_LON_ARG) { type = NavType.StringType },
-
-                )
+            )
         ) {
 
         fun buildUniqueRoute(name: String, lat: Double, lon: Double): String =

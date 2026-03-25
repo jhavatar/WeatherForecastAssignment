@@ -1,4 +1,4 @@
-package io.chthonic.weather.feature.cityforecast.screens.locationlist
+package io.chthonic.weather.feature.cityforecast.screens.citylist
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.ErrorOutline

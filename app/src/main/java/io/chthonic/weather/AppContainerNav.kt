@@ -17,7 +17,7 @@ fun AppContainerNavHost(
 ) = SharedTransitionLayout(modifier = modifier) {
     NavHost(
         navController = appContainerState.navController,
-        startDestination = CityForecastDestination.LocationList.route,
+        startDestination = CityForecastDestination.CityList.route,
         modifier = Modifier,
     ) {
         cityForecastNavGraph(appContainerState)

@@ -1,4 +1,4 @@
-package io.chthonic.weather.feature.cityforecast.screens.location
+package io.chthonic.weather.feature.cityforecast.screens.citydetail
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -16,8 +16,8 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-@HiltViewModel(assistedFactory = LocationDetailViewModel.LocationDetailViewModelFactory::class)
-internal class LocationDetailViewModel @AssistedInject constructor(
+@HiltViewModel(assistedFactory = CityDetailViewModel.CityDetailViewModelFactory::class)
+internal class CityDetailViewModel @AssistedInject constructor(
     @Assisted("name") name: String,
     @Assisted("lat") lat: Double,
     @Assisted("lon") lon: Double,
@@ -25,22 +25,22 @@ internal class LocationDetailViewModel @AssistedInject constructor(
 ) : ViewModel() {
 
     @AssistedFactory
-    interface LocationDetailViewModelFactory {
+    interface CityDetailViewModelFactory {
         fun create(
             @Assisted("name") name: String,
             @Assisted("lat") lat: Double,
             @Assisted("lon") lon: Double,
-        ): LocationDetailViewModel
+        ): CityDetailViewModel
     }
 
     private val _state = MutableStateFlow(
-        LocationDetailState(
+        CityDetailState(
             name = name,
             lat = lat,
             lon = lon,
         )
     )
-    val state: StateFlow<LocationDetailState> = _state.asStateFlow()
+    val state: StateFlow<CityDetailState> = _state.asStateFlow()
 
     init {
         viewModelScope.launch {

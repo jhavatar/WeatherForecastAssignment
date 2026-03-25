@@ -1,4 +1,4 @@
-package io.chthonic.weather.feature.cityforecast.screens.locationlist
+package io.chthonic.weather.feature.cityforecast.screens.citylist
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -38,15 +38,15 @@ private const val MY_LOCATION_DISPLAY_NAME = "MY LOCATION"
 
 @OptIn(ExperimentalCoroutinesApi::class, FlowPreview::class)
 @HiltViewModel
-internal class LocationListViewModel @Inject constructor(
+internal class CityListViewModel @Inject constructor(
     private val geocodingRepo: GeocodingRepo,
     private val weatherRepo: WeatherRepo,
     private val locationRepo: LocationRepo,
-    private val listUiStateResolver: LocationListUiStateResolver,
+    private val listUiStateResolver: CityListUiStateResolver,
 ) : ViewModel() {
 
-    private val _state = MutableStateFlow(LocationListState())
-    val state: StateFlow<LocationListState> = _state.asStateFlow()
+    private val _state = MutableStateFlow(CityListState())
+    val state: StateFlow<CityListState> = _state.asStateFlow()
 
     private val _navigationEvent = Channel<NavigationEvent>(Channel.BUFFERED)
     val navigationEvent = _navigationEvent.receiveAsFlow()
@@ -131,7 +131,7 @@ internal class LocationListViewModel @Inject constructor(
     fun onLocationClick(locationState: LocationCurrentWeather) {
         viewModelScope.launch {
             _navigationEvent.send(
-                NavigationEvent.ToLocationDetail(
+                NavigationEvent.ToCityDetail(
                     name = locationState.displayName,
                     lat = locationState.location.lat,
                     lon = locationState.location.lon
