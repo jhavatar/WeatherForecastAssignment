@@ -15,6 +15,20 @@ Create an Android app that displays the weather forecast.
 ## Implementation
 The developed app is called **F☀️recast**. The following sections detail its features, design decisions, tech stack, architecture, and development tools used.
 
+### Screenshots
+<table>
+  <tr>
+    <td><img width="200" alt="forecast_empty_dark" src="https://github.com/user-attachments/assets/5bb0c69a-71bf-42c7-a5e5-74213f01737a" /></td>
+    <td><img width="200" alt="forecast_search_dark" src="https://github.com/user-attachments/assets/b74b7aae-ef5f-43a4-a846-f963d1a0d7ca" /></td>
+    <td><img width="200" height="2400" alt="forecast_week_dark" src="https://github.com/user-attachments/assets/024485b2-d65b-4bf5-b34d-b73a56cee938" /></td>
+  </tr>
+  <tr>
+    <td><img width="200" alt="forecast_empty_light" src="https://github.com/user-attachments/assets/cf78aac7-b58c-4a88-b7a1-d47fedb711db" />></td>
+    <td><img width="200" alt="forecast_search_light" src="https://github.com/user-attachments/assets/8066a21b-ffd1-4d1e-8d41-8814e27d595d" /></td>
+    <td><img width="200" alt="forecast_week_light" src="https://github.com/user-attachments/assets/ab5537da-8c15-4995-9187-ef0e77d58bcb" /></td>
+  </tr>
+</table>
+
 ### Features
 - Display the current weather forecast for the user's location (Requirements: 1, 2)
 - Search for cities and display their current weather forecast (Requirements: 3, 4)
