@@ -1,24 +1,86 @@
-[![Android CI](https://github.com/jhavatar/RickAndMortyInterviewCoding/actions/workflows/android.yml/badge.svg)](https://github.com/jhavatar/RickAndMortyInterviewCoding/actions/workflows/android.yml)
+[![Android CI](https://github.com/jhavatar/WeatherForecastAssignment/actions/workflows/android.yml/badge.svg)](https://github.com/jhavatar/WeatherForecastAssignment/actions/workflows/android.yml)
 
-# Rick and Morty interview coding task
+# Weather Forecast App
 
 ## Task
-Choose a timeframe to complete the task, e.g. 2 hours. Build an app to the best of your ability in the allotted time that implements a feed of images from the following endpoint: https://rickandmortyapi.com/api/character/
+Create an Android app that displays the weather forecast.
 
-Documentation: https://rickandmortyapi.com/documentation/#get-all-characters
+### Requirements
+1. Display the weather forecast for the current day.
+2. Display the weather forecast for the week.
+3. Display the weather forecast for the current city.
+4. Allow the user to choose any other city and view its weather forecast.
+5. The solution must contain at least one feature module.
 
-Requirements:
-- Display all of the character images from 1 page of results
-- No crashes or ANRs
-- Use an app architecture of choice: MVP, MVVM, etc
+## Implementation
+The developed app is called **F☀️recast**. The following sections detail its features, design decisions, tech stack, architecture, and development tools used.
 
-Ideas for optional, bonus features:
-- Infinite scrolling / pagination
-- Displaying more information of each character
-- Retry logic for failed requests
-- Offline storage
+### Features
+- Display the current weather forecast for the user's location (Requirements: 1, 2)
+- Search for cities and display their current weather forecast (Requirements: 3, 4)
+- Select a city or location and view the weekly weather forecast (Requirement 2)
+- Switch between Celsius and Fahrenheit temperature units
 
-## My implementation
-Everything in the first commit was done in 2 hours. Later commits are just the remaining, listed optional features added with no time constraints.
+### Design
+- Material 3 design system
+- "Warm Coastal" app theme
+- Light mode ("midday sun on warm sand") and dark mode ("beach fire at night")
+- Temperature-reactive color scheme — the UI adapts its colors to reflect the current temperature
 
-*Note, architecture decisions were made with time constraint in mind -- a real app with no time constraint would be considerably "cleaner" e.g. only interfaces visible between layers.*
+### Tech Stack
+| Category | Library |
+|---|---|
+| Language | Kotlin |
+| UI | Jetpack Compose, Material 3 |
+| Navigation | Jetpack Navigation Compose |
+| Dependency Injection | Hilt |
+| Concurrency | Coroutines, Flow |
+| Networking | Ktor |
+| Serialization | Kotlin Serialization |
+| Lifecycle | AndroidX Lifecycle, ViewModel |
+| Collections | KotlinX Immutable Collections |
+| Logging | Timber |
+| Testing | JUnit |
+| Weather Data | [Open Meteo](https://open-meteo.com/) — open source, free for non-commercial use, no API key required |
+| Geocoding | [Nominatim](https://nominatim.org/) — open source, free for non-commercial use, no API key required |
+
+### Architecture
+The app follows Clean Architecture principles, with modules organized into three horizontal layers — presentation, domain, and data. The domain layer sits between presentation and data, and dependencies always point inward toward the domain.
+
+| Module | Description |
+|---|---|
+| `:app` | Entry point — assembles modules and wires navigation |
+| `:common` | Shared utilities across all layers |
+| `:domain` | Highest level module — contains business logic and use cases, no dependencies on other modules |
+| `:domain:dataapi` | Contracts (interfaces) between the data layer and domain layer |
+| `:domain:presentationapi` | Contracts (interfaces) between the domain layer and presentation layer |
+| `:data:weather` | Data layer — retrieves weather forecasts for coordinates |
+| `:data:geocoding` | Data layer — retrieves geographic coordinates from search strings |
+| `:data:location` | Data layer — retrieves the device's geographic coordinates |
+| `:data:common` | Shared data layer utilities |
+| `:ui:common` | Shared UI theme and components across the presentation layer |
+| `:feature:cityforecast` | Feature module in the presentation layer — city list and detail screens (Requirement 5) |
+
+### CityForecast Feature Module
+This feature module delivers the [features](#features) listed above — displaying weather forecasts for cities, using an MVVM architecture with unidirectional data flow.
+
+The public interface is intentionally minimal. The feature registers its screens via a `NavGraphBuilder` extension:
+```kotlin
+fun NavGraphBuilder.cityForecastNavGraph(appContainerState: AppContainerState)
+```
+
+Call this within a `NavHost` block (in `AppContainerNavHost` in `:app`) to add the city list and detail screens to the navigation graph.
+
+### Tools & Assistance
+- [Material Theme Builder](https://material-foundation.github.io/material-theme-builder/) — inspiration for the app's color scheme
+- **Image Asset Studio** (built into Android Studio) — generated the launch icon from a source image
+- [Claude](https://claude.ai) — used as a development assistant throughout the project:
+  - Recommended the free APIs used for weather data and geocoding
+  - Jetpack Compose patterns and best practices
+  - Architecture decisions and code review
+  - App icon image generation
+  - Theme design and color system
+  - The `:data:location` module and location permission UI were fully generated by Claude Code — boilerplate I had no interest in writing by hand. The only manual change was converting the location service from a suspend function to a Flow.
+
+> [!NOTE]
+> All code was reviewed, understood, and integrated by the author.
