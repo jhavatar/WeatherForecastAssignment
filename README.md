@@ -1,6 +1,10 @@
 [![Android CI](https://github.com/jhavatar/WeatherForecastAssignment/actions/workflows/android.yml/badge.svg)](https://github.com/jhavatar/WeatherForecastAssignment/actions/workflows/android.yml)
 
-# Weather Forecast App
+<p align="center">
+<img src="https://github.com/user-attachments/assets/a9a41700-e61e-4d12-86a8-ad599a02a935" width="64" />
+</p>
+
+# Weather Forecast App Assignment
 
 ## Task
 Create an Android app that displays the weather forecast.
