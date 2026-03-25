@@ -10,6 +10,14 @@ private const val LOC_LAT_ARG: String = "lat"
 private const val LOC_LON_ARG: String = "lon"
 private const val LOC_NAME_ARG: String = "name"
 
+/**
+ * Navigation destinations supported by the City Forecast feature:
+ * [CityList] - Displays the current weather of user's location and a list of cities resulting from a search query.
+ * [CityDetail] - Displays a week's weather for a city/location.
+ *
+ * Can navigate destination using [io.chthonic.weather.ui.common.AppContainerState.navController], e.g.:
+ * `appContainerState.navController.navigate(CityForecastDestination.CityDetail.route)`
+ */
 sealed class CityForecastDestination(
     val route: String,
     val arguments: List<NamedNavArgument> = emptyList()

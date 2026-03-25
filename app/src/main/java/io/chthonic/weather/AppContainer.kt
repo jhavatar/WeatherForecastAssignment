@@ -22,6 +22,11 @@ import io.chthonic.weather.ui.common.AppBarStyle
 import io.chthonic.weather.ui.common.rememberAppContainerState
 import io.chthonic.weather.ui.common.theme.AppColors
 
+/**
+ * Root composable that assembles the app shell — scaffold, app bar, snackbar host,and navigation host.
+ * Note, [AppContainerState] that lives in module :ui:common and allows modules to update AppContainer's UI
+ * elements such as the app bar title, navigation icon, and actions — without depending on :app.
+ */
 @Composable
 @OptIn(ExperimentalMaterial3Api::class)
 fun AppContainer() {

@@ -16,6 +16,12 @@ import androidx.navigation.compose.rememberNavController
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
+/**
+ * Holds and coordinates shared UI state for the app shell — the nav controller, app bar, and snackbar:
+ * [navController] to navigate to known routes: navController.navigate(route)
+ * [updateAppBarForDestination] to update the app bar based on current destination
+ * [showSnackbar] to display a snackbar
+ */
 @Stable
 class AppContainerState(
     val navController: NavHostController,
