@@ -40,6 +40,10 @@ class AppContainerState(
     var appBarActions by mutableStateOf<(@Composable RowScope.() -> Unit)?>(null)
         private set
 
+    /**
+     * Updates the app bar based on the current destination.
+     * @return true if [destinationRoute] is the current one and the app bar was updated, false otherwise.
+     */
     @Composable
     fun updateAppBarForDestination(
         destinationRoute: String, // prevent screens/destinations fighting over state during transitions
@@ -47,14 +51,15 @@ class AppContainerState(
         showNavigationIcon: Boolean = false,
         style: AppBarStyle = AppBarStyle.Pinned,
         actions: (@Composable RowScope.() -> Unit)? = null,
-    ) {
+    ): Boolean {
         val currentRoute = navController.currentBackStackEntryAsState().value?.destination?.route
-        if (currentRoute != destinationRoute) return
+        if (currentRoute != destinationRoute) return false
 
         appBarTitle = title
         appBarStyle = style
         appBarShowNavigationIcon = showNavigationIcon
         appBarActions = actions
+        return true
     }
 
     fun showSnackbar(message: String, duration: SnackbarDuration = SnackbarDuration.Short) {

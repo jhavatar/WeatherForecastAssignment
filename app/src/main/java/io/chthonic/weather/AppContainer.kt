@@ -24,7 +24,7 @@ import io.chthonic.weather.ui.common.theme.AppColors
 
 /**
  * Root composable that assembles the app shell — scaffold, app bar, snackbar host,and navigation host.
- * Note, [AppContainerState] that lives in module :ui:common and allows modules to update AppContainer's UI
+ * Note, [io.chthonic.weather.ui.common.AppContainerState], that lives in module :ui:common, allows modules to update AppContainer's UI
  * elements such as the app bar title, navigation icon, and actions — without depending on :app.
  */
 @Composable
