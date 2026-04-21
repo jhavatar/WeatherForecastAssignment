@@ -28,6 +28,9 @@ kotlin {
 dependencies {
     implementation libs.androidx.core
 
+    implementation platform(libs.compose.bom)
+    implementation libs.compose.runtime.annotation
+
     testImplementation libs.junit
     androidTestImplementation libs.androidx.test.ext.junit
 }

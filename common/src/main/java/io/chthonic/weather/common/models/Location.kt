@@ -1,5 +1,8 @@
 package io.chthonic.weather.common.models
 
+import androidx.compose.runtime.Immutable
+
+@Immutable
 data class Location(
     val lat: Double,
     val lon: Double,

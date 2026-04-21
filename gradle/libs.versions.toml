@@ -62,6 +62,7 @@ compose-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview" }
 compose-tooling = { module = "androidx.compose.ui:ui-tooling" }
 compose-lifecycle-runtime = { group = "androidx.lifecycle", name = "lifecycle-runtime-compose-android", version.ref = "lifecycle" }
 compose-fonts = { group = "androidx.compose.ui", name = "ui-text-google-fonts" }
+compose-runtime-annotation = { group = "androidx.compose.runtime", name = "runtime-annotation" }
 
 # navigation
 navigation = { module = "androidx.navigation:navigation-ui-ktx", version.ref = "navigation" }
