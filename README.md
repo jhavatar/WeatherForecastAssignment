@@ -24,7 +24,7 @@ The developed app is called **F☀️recast**. The following sections detail its
   <tr>
     <td><img width="200" alt="forecast_empty_dark" src="https://github.com/user-attachments/assets/5bb0c69a-71bf-42c7-a5e5-74213f01737a" /></td>
     <td><img width="200" alt="forecast_search_dark" src="https://github.com/user-attachments/assets/b74b7aae-ef5f-43a4-a846-f963d1a0d7ca" /></td>
-    <td><img width="200" height="2400" alt="forecast_week_dark" src="https://github.com/user-attachments/assets/024485b2-d65b-4bf5-b34d-b73a56cee938" /></td>
+    <td><img width="200" alt="forecast_week_dark" src="https://github.com/user-attachments/assets/024485b2-d65b-4bf5-b34d-b73a56cee938" /></td>
   </tr>
   <tr>
     <td><img width="200" alt="forecast_empty_light" src="https://github.com/user-attachments/assets/cf78aac7-b58c-4a88-b7a1-d47fedb711db" /></td>
